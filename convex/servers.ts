@@ -8,7 +8,7 @@ export const list = query({
     return await ctx.db.query('servers').collect()
   },
 })
-
+//
 // Get a server by ID
 export const get = query({
   args: { serverId: v.id('servers') },
