@@ -171,6 +171,15 @@ export const seedDatabase = mutation({
       order: 2,
     })
 
+    const showcaseChannel = await ctx.db.insert('channels', {
+      serverId,
+      name: 'showcase',
+      type: 'text',
+      categoryId: textCategory,
+      topic: 'Art, media, and visual experiments',
+      order: 3,
+    })
+
     await ctx.db.insert('channels', {
       serverId,
       name: 'Study Room',
@@ -247,6 +256,61 @@ export const seedDatabase = mutation({
         channelId: homeworkChannel,
         userId: alexId,
         content: 'Thanks Sarah! I missed that part.',
+      }),
+    ])
+
+    // Add media showcase messages
+    await Promise.all([
+      ctx.db.insert('messages', {
+        channelId: showcaseChannel,
+        userId: paulId,
+        content: 'New series: Neon studies',
+        type: 'media',
+        media: {
+          title: 'Neon Studies',
+          caption:
+            'Exploring saturated light and glow gradients inspired by city nights.',
+          tags: ['digital', 'lighting', '2026'],
+          externalUrl: 'https://www.behance.net/',
+          images: [
+            'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=1600&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1487412912498-0447578fcca8?q=80&w=1600&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop',
+          ],
+        },
+      }),
+      ctx.db.insert('messages', {
+        channelId: showcaseChannel,
+        userId: paulId,
+        content: 'Short film: Echoes',
+        type: 'media',
+        media: {
+          title: 'Echoes (Short Film)',
+          caption:
+            'A moody, sound-forward short exploring memory through slow motion.',
+          tags: ['film', 'sound design', 'experimental'],
+          externalUrl: 'https://vimeo.com/',
+          images: [
+            'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=1600&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=1600&auto=format&fit=crop',
+          ],
+        },
+      }),
+      ctx.db.insert('messages', {
+        channelId: showcaseChannel,
+        userId: paulId,
+        content: 'Sketchbook: Creature Concepts',
+        type: 'media',
+        media: {
+          title: 'Creature Concepts',
+          caption:
+            'Quick iterative sketches for a speculative wildlife project.',
+          tags: ['illustration', 'concept art'],
+          externalUrl: 'https://www.artstation.com/',
+          images: [
+            'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1600&auto=format&fit=crop',
+          ],
+        },
       }),
     ])
 

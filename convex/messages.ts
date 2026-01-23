@@ -73,6 +73,88 @@ export const send = mutation({
   },
 })
 
+// Create a media message from storage files
+export const createMediaFromStorage = mutation({
+  args: {
+    channelId: v.id('channels'),
+    title: v.string(),
+    caption: v.string(),
+    tags: v.array(v.string()),
+    externalUrl: v.optional(v.string()),
+    userId: v.optional(v.id('users')),
+    fileIds: v.optional(v.array(v.string())),
+    maxFiles: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    // For demo, use provided userId or get first user
+    let userId = args.userId
+    if (!userId) {
+      const users = await ctx.db.query('users').take(1)
+      if (!users[0]) throw new Error('No users found - please seed the database')
+      userId = users[0]._id
+    }
+
+    // Verify channel exists
+    const channel = await ctx.db.get(args.channelId)
+    if (!channel) throw new Error('Channel not found')
+
+    const maxFiles = args.maxFiles ?? 12
+    let storageFiles: { _id: string; contentType?: string }[] = []
+
+    if (args.fileIds && args.fileIds.length > 0) {
+      const files = await Promise.all(
+        args.fileIds.map((id) => ctx.db.system.get(id as any))
+      )
+      storageFiles = files
+        .filter(Boolean)
+        .map((file) => ({
+          _id: (file as { _id: string })._id,
+          contentType: (file as { contentType?: string }).contentType,
+        }))
+    } else {
+      const files = await ctx.db.system
+        .query('_storage')
+        .order('desc')
+        .take(maxFiles)
+      storageFiles = files.map((file) => ({
+        _id: (file as { _id: string })._id,
+        contentType: (file as { contentType?: string }).contentType,
+      }))
+    }
+
+    const imageFiles = storageFiles.filter((file) =>
+      file.contentType?.startsWith('image/')
+    )
+
+    if (!imageFiles.length) {
+      throw new Error('No image files found in storage')
+    }
+
+    const urls = await Promise.all(
+      imageFiles.map((file) => ctx.storage.getUrl(file._id as any))
+    )
+    const images = urls.filter((url): url is string => Boolean(url))
+
+    if (!images.length) {
+      throw new Error('No storage URLs available for images')
+    }
+
+    return await ctx.db.insert('messages', {
+      channelId: args.channelId,
+      userId,
+      content: args.title,
+      type: 'media',
+      media: {
+        title: args.title,
+        caption: args.caption,
+        tags: args.tags,
+        externalUrl: args.externalUrl,
+        images,
+      },
+    })
+  },
+})
+
 // Edit a message
 export const edit = mutation({
   args: {

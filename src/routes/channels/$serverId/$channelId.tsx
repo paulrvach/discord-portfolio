@@ -29,7 +29,7 @@ function ChannelPage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col w-content min-w-0">
+    <div className="flex-1 flex flex-col w-content min-w-0 min-h-0">
       {/* Chat Header */}
       <ChatHeader channel={channel} />
       

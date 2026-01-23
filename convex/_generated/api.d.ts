@@ -15,6 +15,7 @@ import type * as http from "../http.js";
 import type * as messages from "../messages.js";
 import type * as seed from "../seed.js";
 import type * as servers from "../servers.js";
+import type * as storage from "../storage.js";
 import type * as users from "../users.js";
 
 import type {
@@ -31,6 +32,7 @@ declare const fullApi: ApiFromModules<{
   messages: typeof messages;
   seed: typeof seed;
   servers: typeof servers;
+  storage: typeof storage;
   users: typeof users;
 }>;
 

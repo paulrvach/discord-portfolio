@@ -44,8 +44,8 @@ function ChannelsLayout() {
       <ServerRail />
 
       {/* Main Content Area */}
-      <SidebarInset className="flex w-full overflow-hidden border-discord-divider border">
-        <div className="flex ">
+      <SidebarInset className="flex w-full h-screen overflow-hidden border-discord-divider border">
+        <div className="flex flex-1 min-h-0 w-full">
           <Outlet />
         </div>
       </SidebarInset>

@@ -31,7 +31,7 @@ export function ChatMessages({ channelId, channelName }: ChatMessagesProps) {
   }
 
   return (
-    <ScrollArea className="flex-1 px-4 ">
+    <ScrollArea className="flex-1 min-h-0 px-4">
       <div className="flex flex-col-reverse pb-4">
         {/* Messages in reverse order for proper scrolling */}
         {messages.map((message: MessageWithUser, index: number) => {
@@ -56,10 +56,22 @@ export function ChatMessages({ channelId, channelName }: ChatMessagesProps) {
 
 // Helper to determine if messages should be grouped
 function shouldGroupMessages(
-  current: { userId?: Id<'users'>; _creationTime: number; type?: 'user' | 'bot' },
-  prev: { userId?: Id<'users'>; _creationTime: number; type?: 'user' | 'bot' }
+  current: {
+    userId?: Id<'users'>
+    _creationTime: number
+    type?: 'user' | 'bot' | 'media'
+    embed?: { type?: string }
+  },
+  prev: {
+    userId?: Id<'users'>
+    _creationTime: number
+    type?: 'user' | 'bot' | 'media'
+    embed?: { type?: string }
+  }
 ): boolean {
   if (current.type === 'bot' || prev.type === 'bot') return false
+  if (current.type === 'media' || prev.type === 'media') return false
+  if (current.embed?.type === 'github' || prev.embed?.type === 'github') return false
   // Different users = don't group
   if (current.userId !== prev.userId) return false
 

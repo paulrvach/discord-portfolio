@@ -66,7 +66,7 @@ export default defineSchema({
     content: v.string(),
     attachmentUrl: v.optional(v.string()),
     editedAt: v.optional(v.number()),
-    type: v.optional(v.union(v.literal('user'), v.literal('bot'))),
+    type: v.optional(v.union(v.literal('user'), v.literal('bot'), v.literal('media'))),
     embed: v.optional(
       v.object({
         type: v.literal('github'),
@@ -83,6 +83,15 @@ export default defineSchema({
         footerText: v.optional(v.string()),
         footerIconUrl: v.optional(v.string()),
         timestamp: v.optional(v.number()),
+      })
+    ),
+    media: v.optional(
+      v.object({
+        title: v.string(),
+        caption: v.string(),
+        tags: v.array(v.string()),
+        externalUrl: v.optional(v.string()),
+        images: v.array(v.string()),
       })
     ),
   }).index('by_channel', ['channelId']),

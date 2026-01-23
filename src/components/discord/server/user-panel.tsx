@@ -1,4 +1,4 @@
-import { Mic, Headphones, Settings, Pencil, ArrowRightLeft, Copy } from 'lucide-react'
+import { Mic, Headphones, Settings, Pencil, ArrowRightLeft, Copy, Pin, LocateIcon, PinIcon, MarsStroke, LocationEdit, MapPin } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
 import {
   Tooltip,
@@ -22,7 +22,7 @@ export function UserPanel() {
     username: 'paulrvach',
     status: 'online' as const,
     customStatus: 'Buildin cool stuff',
-    location: 'Los Angeles, CA',
+    location: 'Irvine, CA',
     bio: 'Another Day in Pizza Paradise 🍕 ...',
     imageUrl: undefined,
     memberSince: 'Dec 3, 2016',
@@ -93,7 +93,7 @@ export function UserPanel() {
               </div>
 
               <div className="mt-3 flex items-center gap-2 text-discord-text-primary text-sm">
-                <span>{user.location}</span>
+                <MapPin className='w-4 h-4'/><span>{user.location} </span>
               </div>
 
               <div className="mt-3 text-sm text-discord-text-primary">
