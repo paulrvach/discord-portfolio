@@ -3,6 +3,7 @@ import { useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
 import { ServerSidebar } from '../../../components/discord/server/server-sidebar'
 import { MemberSidebar } from '../../../components/discord/members/member-sidebar'
+import { UserPanel } from '../../../components/discord/server/user-panel'
 import { useUIStore } from '../../../stores/ui-store'
 import type { Id } from '../../../../convex/_generated/dataModel'
 
@@ -42,6 +43,10 @@ function ServerLayout() {
       {memberListVisible && (
         <MemberSidebar serverId={serverId as Id<'servers'>} />
       )}
+
+      <div className="fixed bottom-4 left-4 z-50 w-72">
+        <UserPanel />
+      </div>
     </>
   )
 }

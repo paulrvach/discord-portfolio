@@ -40,12 +40,12 @@ export function UserPanel() {
     .toUpperCase()
 
   return (
-    <div className="h-[52px] px-2 bg-discord-darker/50 flex items-center gap-2">
+    <div className="h-[52px] px-2 py-8 bg-card border rounded-2xl  flex items-center gap-2 border-discord-divider w-sm shadow ">
       {/* User Info */}
       <Popover>
         <PopoverTrigger asChild>
           <button
-            className="flex items-center gap-2 flex-1 min-w-0 p-1 rounded hover:bg-discord-hover group"
+            className="flex items-center gap-2 flex-1 min-w-0 p-1 rounded-lg hover:bg-discord-hover group"
           >
             <div className="relative">
               <Avatar className="w-8 h-8">
@@ -67,7 +67,7 @@ export function UserPanel() {
             </div>
           </button>
         </PopoverTrigger>
-        <PopoverContent side="top" align="start" className="w-[340px] p-0 bg-discord-dark border-none shadow-xl overflow-hidden">
+        <PopoverContent side="top" align="start" className="w-[340px] p-0 bg-discord-dark border shadow-xl overflow-hidden border-discord-divider rounded-2xl">
           {/* Banner */}
           <div className="h-[60px] bg-[#0047AB]" />
 

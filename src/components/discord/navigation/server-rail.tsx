@@ -2,7 +2,6 @@ import { useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
 import { HomeButton } from './home-button'
 import { NavigationItem } from './navigation-item'
-import { NavigationAction } from './navigation-action'
 import type { Doc } from '../../../../convex/_generated/dataModel'
 import {
   Sidebar,
@@ -11,7 +10,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarSeparator,
-  SidebarFooter,
 } from '../../ui/sidebar'
 
 export function ServerRail() {
@@ -45,14 +43,6 @@ export function ServerRail() {
       </SidebarContent>
 
       <SidebarSeparator className="bg-discord-divider w-8 mx-auto my-2" />
-
-      <SidebarFooter className="bg-discord-darker pb-3 pt-0 flex flex-col items-center">
-        <SidebarMenu className="gap-2 items-center w-full">
-          <SidebarMenuItem className="w-full flex justify-center">
-            <NavigationAction />
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   )
 }

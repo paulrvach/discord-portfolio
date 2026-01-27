@@ -1,5 +1,17 @@
 import { v } from 'convex/values'
 import { query } from './_generated/server'
+import type { Id } from './_generated/dataModel'
+
+// Get a file URL by storage ID
+export const getUrl = query({
+  args: {
+    storageId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const url = await ctx.storage.getUrl(args.storageId as Id<'_storage'>)
+    return url
+  },
+})
 
 // List recent storage files with signed URLs
 export const listRecent = query({

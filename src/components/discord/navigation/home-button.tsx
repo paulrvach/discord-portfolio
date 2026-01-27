@@ -1,4 +1,6 @@
 import { Link, useLocation } from '@tanstack/react-router'
+import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { cn } from '../../../lib/utils'
 import {
   Tooltip,
@@ -10,18 +12,26 @@ import {
 export function HomeButton() {
   const location = useLocation()
   const isActive = location.pathname === '/channels/@me'
+  const [isHovered, setIsHovered] = useState(false)
+  const pillHeight = isActive ? 40 : isHovered ? 20 : 0
 
   return (
     <TooltipProvider delayDuration={50}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="relative group">
+          <div
+            className="relative group"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
             {/* Notification Pill */}
-            <div
-              className={cn(
-                'notification-pill h-0 group-hover:h-5',
-                isActive && 'h-10'
-              )}
+            <motion.div
+              className="notification-pill"
+              animate={{
+                height: pillHeight,
+                opacity: isActive || isHovered ? 1 : 0,
+              }}
+              transition={{ type: 'spring', stiffness: 320, damping: 24 }}
             />
             
             <Link to="/channels/@me">

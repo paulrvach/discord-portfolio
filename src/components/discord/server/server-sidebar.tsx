@@ -3,7 +3,6 @@ import { api } from '../../../../convex/_generated/api'
 import { ScrollArea } from '../../ui/scroll-area'
 import { ServerHeader } from './server-header'
 import { ServerChannelList } from './server-channel-list'
-import { UserPanel } from './user-panel'
 import type { Doc } from '../../../../convex/_generated/dataModel'
 
 interface ServerSidebarProps {
@@ -33,8 +32,6 @@ export function ServerSidebar({ server }: ServerSidebarProps) {
         />
       </ScrollArea>
       
-      {/* User Panel (Fixed at Bottom) */}
-      <UserPanel />
     </div>
   )
 }
