@@ -7,16 +7,19 @@ import { MessageHeader } from './message/message-header'
 import { MessageContent } from './message/message-content'
 import { GitHubEmbed } from './message/github-embed'
 import { MediaMessage } from './message/media-message'
+import { AudioMessage } from '@/components/discord/chat/message/audio-message'
 import type {
   GitHubEmbed as GitHubEmbedType,
   MediaPayload,
+  AudioPayload,
 } from './message/message-types'
 
 interface ChatMessageProps {
-  message: Doc<'messages'> & {
-    type?: 'user' | 'bot' | 'media'
+  message: Omit<Doc<'messages'>, 'type'> & {
+    type?: 'user' | 'bot' | 'media' | 'audio'
     embed?: GitHubEmbedType
     media?: MediaPayload
+    audio?: AudioPayload
     user: {
       _id: Id<'users'>
       name: string
@@ -30,6 +33,7 @@ export function ChatMessage({ message, isCompact }: ChatMessageProps) {
   const [isHovered, setIsHovered] = useState(false)
   const isBotMessage = message.type === 'bot' || message.embed?.type === 'github'
   const isMediaMessage = message.type === 'media' && Boolean(message.media)
+  const isAudioMessage = message.type === 'audio' && Boolean(message.audio)
   const embedTimestamp = message.embed?.timestamp ?? message._creationTime
   const embedTimeLabel = useMemo(
     () => formatTime(embedTimestamp),
@@ -43,7 +47,7 @@ export function ChatMessage({ message, isCompact }: ChatMessageProps) {
     .join('')
     .toUpperCase()
 
-  const showCompactLayout = isCompact && !isMediaMessage && !message.embed
+  const showCompactLayout = isCompact && !isMediaMessage && !isAudioMessage && !message.embed
 
   if (showCompactLayout) {
     return (
@@ -86,7 +90,7 @@ export function ChatMessage({ message, isCompact }: ChatMessageProps) {
     >
       <div className="flex gap-4">
         {/* Avatar */}
-        <Avatar className="w-10 h-10 mt-0.5 flex-shrink-0 cursor-pointer hover:opacity-80">
+        <Avatar className="w-10 h-10 mt-0.5  cursor-pointer hover:opacity-80">
           <AvatarImage src={message.user.imageUrl} />
           <AvatarFallback className="bg-discord-blurple text-white text-sm">
             {initials}
@@ -101,7 +105,7 @@ export function ChatMessage({ message, isCompact }: ChatMessageProps) {
             timeLabel={formatTime(message._creationTime)}
           />
 
-          {!message.embed && !isMediaMessage && (
+          {!message.embed && !isMediaMessage && !isAudioMessage && (
             <MessageContent content={message.content} editedAt={message.editedAt} />
           )}
 
@@ -110,6 +114,7 @@ export function ChatMessage({ message, isCompact }: ChatMessageProps) {
           )}
 
           {isMediaMessage && message.media && <MediaMessage media={message.media} />}
+          {isAudioMessage && message.audio && <AudioMessage audio={message.audio} />}
         </div>
       </div>
 

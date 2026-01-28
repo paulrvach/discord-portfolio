@@ -66,7 +66,7 @@ export default defineSchema({
     content: v.string(),
     attachmentUrl: v.optional(v.string()),
     editedAt: v.optional(v.number()),
-    type: v.optional(v.union(v.literal('user'), v.literal('bot'), v.literal('media'))),
+    type: v.optional(v.union(v.literal('user'), v.literal('bot'), v.literal('media'), v.literal('audio'))),
     embed: v.optional(
       v.object({
         type: v.literal('github'),
@@ -92,6 +92,17 @@ export default defineSchema({
         tags: v.array(v.string()),
         externalUrl: v.optional(v.string()),
         images: v.array(v.string()),
+      })
+    ),
+    audio: v.optional(
+      v.object({
+        id: v.string(),
+        title: v.string(),
+        artist: v.string(),
+        duration: v.number(),
+        cover: v.optional(v.string()),
+        storageId: v.optional(v.id('_storage')),
+        url: v.optional(v.string()),
       })
     ),
   }).index('by_channel', ['channelId']),

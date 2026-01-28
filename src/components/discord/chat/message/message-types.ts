@@ -22,3 +22,13 @@ export type MediaPayload = {
   externalUrl?: string
   images: string[]
 }
+
+export type AudioPayload = {
+  id: string
+  title: string
+  artist: string
+  duration: number
+  cover?: string
+  storageId?: string
+  url?: string
+}

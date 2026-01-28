@@ -18,12 +18,25 @@ export const listByChannel = query({
       .order('desc')
       .take(100)
 
-    // Fetch user data for each message
+    // Fetch user data and resolve audio URLs for each message
     const messagesWithUsers = await Promise.all(
       messages.map(async (message) => {
+        // Resolve audio URL from storageId if present
+        let resolvedAudio = message.audio
+        if (message.audio?.storageId && !message.audio.url) {
+          const audioUrl = await ctx.storage.getUrl(message.audio.storageId)
+          if (audioUrl) {
+            resolvedAudio = {
+              ...message.audio,
+              url: audioUrl,
+            }
+          }
+        }
+
         if (!message.userId) {
           return {
             ...message,
+            audio: resolvedAudio,
             user: BOT_USER,
           }
         }
@@ -31,6 +44,7 @@ export const listByChannel = query({
         const user = await ctx.db.get(message.userId)
         return {
           ...message,
+          audio: resolvedAudio,
           user: {
             _id: user!._id,
             name: user!.name,
@@ -180,5 +194,79 @@ export const remove = mutation({
     if (!message) throw new Error('Message not found')
     
     await ctx.db.delete(args.messageId)
+  },
+})
+
+// Update an audio message with a storage ID or external URL
+export const updateAudioUrl = mutation({
+  args: {
+    messageId: v.id('messages'),
+    storageId: v.optional(v.id('_storage')),
+    externalUrl: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const message = await ctx.db.get(args.messageId)
+    if (!message) throw new Error('Message not found')
+    if (message.type !== 'audio' || !message.audio) {
+      throw new Error('Message is not an audio message')
+    }
+
+    if (!args.storageId && !args.externalUrl) {
+      throw new Error('Either storageId or externalUrl must be provided')
+    }
+
+    // Store the storageId and/or external URL
+    await ctx.db.patch(args.messageId, {
+      audio: {
+        ...message.audio,
+        storageId: args.storageId ?? message.audio.storageId,
+        url: args.externalUrl ?? message.audio.url,
+      },
+    })
+
+    return { success: true }
+  },
+})
+
+// Create an audio message from storage
+export const createAudioMessage = mutation({
+  args: {
+    channelId: v.id('channels'),
+    title: v.string(),
+    artist: v.string(),
+    duration: v.number(),
+    storageId: v.id('_storage'),
+    coverUrl: v.optional(v.string()),
+    userId: v.optional(v.id('users')),
+  },
+  handler: async (ctx, args) => {
+    // For demo, use provided userId or get first user
+    let userId = args.userId
+    if (!userId) {
+      const users = await ctx.db.query('users').take(1)
+      if (!users[0]) throw new Error('No users found - please seed the database')
+      userId = users[0]._id
+    }
+
+    // Verify channel exists
+    const channel = await ctx.db.get(args.channelId)
+    if (!channel) throw new Error('Channel not found')
+
+    const audioId = `audio-${Date.now()}`
+
+    return await ctx.db.insert('messages', {
+      channelId: args.channelId,
+      userId,
+      content: `🎵 ${args.title}`,
+      type: 'audio',
+      audio: {
+        id: audioId,
+        title: args.title,
+        artist: args.artist,
+        duration: args.duration,
+        cover: args.coverUrl,
+        storageId: args.storageId,
+      },
+    })
   },
 })

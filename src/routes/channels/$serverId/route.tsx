@@ -4,6 +4,7 @@ import { api } from '../../../../convex/_generated/api'
 import { ServerSidebar } from '../../../components/discord/server/server-sidebar'
 import { MemberSidebar } from '../../../components/discord/members/member-sidebar'
 import { UserPanel } from '../../../components/discord/server/user-panel'
+import { AudioPlayer } from '../../../components/discord/server/audio-player'
 import { useUIStore } from '../../../stores/ui-store'
 import type { Id } from '../../../../convex/_generated/dataModel'
 
@@ -44,7 +45,8 @@ function ServerLayout() {
         <MemberSidebar serverId={serverId as Id<'servers'>} />
       )}
 
-      <div className="fixed bottom-4 left-4 z-50 w-72">
+      <div className="fixed bottom-4 left-4 z-50 w-72 flex flex-col gap-2">
+        <AudioPlayer />
         <UserPanel />
       </div>
     </>

@@ -1,6 +1,14 @@
 import { v } from 'convex/values'
-import { query } from './_generated/server'
+import { query, mutation } from './_generated/server'
 import type { Id } from './_generated/dataModel'
+
+// Generate an upload URL for file uploads
+export const generateUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.storage.generateUploadUrl()
+  },
+})
 
 // Get a file URL by storage ID
 export const getUrl = query({
