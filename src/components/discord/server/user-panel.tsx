@@ -12,9 +12,12 @@ import {
   PopoverTrigger,
 } from '../../ui/popover'
 import { useModalStore } from '../../../stores/modal-store'
+import { useAudioPlayerStore } from '../../../stores/audio-player-store'
+import { cn } from '../../../lib/utils'
 
 export function UserPanel() {
   const openModal = useModalStore((state) => state.openModal)
+  const isAudioPlayerActive = useAudioPlayerStore((state) => state.isActive && state.playlist.length > 0)
 
   // TODO: Get actual user from auth
   const user = {
@@ -40,7 +43,10 @@ export function UserPanel() {
     .toUpperCase()
 
   return (
-    <div className="h-[52px] px-2 py-8 bg-card border rounded-2xl  flex items-center gap-2 border-discord-divider w-sm shadow ">
+    <div className={cn(
+      "h-[52px] px-2 py-8 bg-card border flex items-center gap-2 border-discord-divider w-full shadow",
+      isAudioPlayerActive ? "border-t-0 rounded-b-xl" : "rounded-xl"
+    )}>
       {/* User Info */}
       <Popover>
         <PopoverTrigger asChild>

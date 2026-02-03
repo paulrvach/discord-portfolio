@@ -166,7 +166,7 @@ export function AudioPlayer() {
       {/* Hidden audio element for actual playback */}
       <audio ref={audioRef} preload="metadata" src={track.url}/>
       
-      <div className="bg-card rounded-t-xl border border-border overflow-hidden shadow">
+      <div className="bg-card rounded-t-xl border border-b-0 border-border overflow-hidden shadow">
         <div className="flex items-center gap-3 p-4 border-b border-border">
           <div className="relative">
             <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center overflow-hidden">

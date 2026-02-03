@@ -18,17 +18,10 @@ export function ProfileBadges({ badges }: ProfileBadgesProps) {
             whileTap={{ scale: 0.95 }}
             className={cn(
               'size-9 rounded-lg flex items-center justify-center cursor-pointer transition-colors',
+              badge.bgClass
             )}
           >
-            {badge.imageUrl ? (
-              <img
-                src={badge.imageUrl}
-                alt={badge.label}
-                className="w-8 h-8 object-fill rounded mix-blend-plus-lighter"
-              />
-            ) : (
-              <Icon className={cn('w-5 h-5', badge.color)} />
-            )}
+            <Icon className={cn('w-5 h-5', badge.colorClass)} />
           </motion.div>
         )
 

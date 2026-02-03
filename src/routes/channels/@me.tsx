@@ -1,25 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
-import {
-  GraduationCap,
-  MapPin,
-  Github,
-  Palette,
-  Music,
-  Code2,
-} from 'lucide-react'
-import { SidebarNavigation } from '../../components/discord/profile/sidebar-navigation'
-import { ProfileHeader } from '../../components/discord/profile/profile-header'
-import { InfoCard } from '../../components/discord/profile/info-card'
-import { QuickActionsList } from '../../components/discord/profile/quick-actions-list'
-import { ExperienceSection } from '../../components/discord/profile/experience-section'
-import { ProfileBadge, Experience, QuickAction } from '../../components/discord/profile/types'
+import { GraduationCap, MapPin, Github, Code2 } from 'lucide-react'
+import { ProfileCard, type ProfileConnection, type ProfileRole } from '../../components/discord/profile/profile-card'
+import { ProfileTabsPanel, type MutualServer } from '../../components/discord/profile/profile-tabs-panel'
+import { ProfileBadge } from '../../components/discord/profile/types'
 
 const BANNER_STORAGE_ID = 'kg20412jssev9jrjnphk7c75e98013hv'
 const AVATAR_STORAGE_ID = 'kg22ekd3tpraawxc6q7gg1tyw58018ha'
-const LOCATION_ICON_STORAGE_ID = 'kg26e9zs1sh087chnx13c5mmvx800jed'
-const CS_MAJOR_ICON_STORAGE_ID = 'kg2aqt0jh7j75by34j63s7k1xn801fgs'
 const GITHUB_ICON_STORAGE_ID = 'kg24xc30sp8njsr8kg9nd82eg9801tf9'
 
 export const Route = createFileRoute('/channels/@me')({
@@ -29,163 +17,136 @@ export const Route = createFileRoute('/channels/@me')({
 function DMHome() {
   const bannerUrl = useQuery(api.storage.getUrl, { storageId: BANNER_STORAGE_ID })
   const avatarUrl = useQuery(api.storage.getUrl, { storageId: AVATAR_STORAGE_ID })
-  const locationIconUrl = useQuery(api.storage.getUrl, { storageId: LOCATION_ICON_STORAGE_ID })
-  const csMajorIconUrl = useQuery(api.storage.getUrl, { storageId: CS_MAJOR_ICON_STORAGE_ID })
   const githubIconUrl = useQuery(api.storage.getUrl, { storageId: GITHUB_ICON_STORAGE_ID })
 
   const profileBadges: ProfileBadge[] = [
     {
       id: 'location',
       icon: MapPin,
-      color: 'text-discord-blurple',
-      bgColor: 'bg-discord-blurple/20',
+      colorClass: 'text-discord-blurple',
+      bgClass: 'bg-discord-blurple/20 border border-discord-blurple/40',
       label: 'Location',
       value: 'Los Angeles, CA',
-      imageUrl: locationIconUrl,
     },
     {
       id: 'education',
       icon: GraduationCap,
-      color: 'text-discord-yellow',
-      bgColor: 'bg-discord-yellow/20',
+      colorClass: 'text-amber-300',
+      bgClass: 'bg-amber-500/20 border border-amber-400/40',
       label: 'Education',
       value: 'Irvine Valley College',
       sublabel: 'Computer Science',
-      imageUrl: csMajorIconUrl,
     },
     {
       id: 'github',
       icon: Github,
-      color: 'text-discord-text-primary',
-      bgColor: 'bg-discord-hover',
+      colorClass: 'text-slate-100',
+      bgClass: 'bg-slate-500/20 border border-slate-300/40',
       label: 'GitHub',
       value: '@paulvachon',
       href: 'https://github.com/paulvachon',
-      imageUrl: githubIconUrl,
     },
     {
       id: 'code',
       icon: Code2,
-      color: 'text-discord-green',
-      bgColor: 'bg-discord-green/20',
+      colorClass: 'text-emerald-300',
+      bgClass: 'bg-emerald-500/20 border border-emerald-400/40',
       label: 'Status',
       value: 'Open to opportunities',
     },
   ]
 
-  const sections = [
-    { label: 'Experience', active: true },
-    { label: 'Projects', active: false },
-    { label: 'Education', active: false },
-    { label: 'Contact', active: false },
-  ]
-
-  const experiences: Experience[] = [
+  const roles: ProfileRole[] = [
     {
-      title: 'Google',
-      subtitle: 'AI Internship/Mentorship',
-      date: 'October 2025 – December 2025',
-      role: 'Software Engineer - React',
-      image:
-        'https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?q=80&w=1600&auto=format&fit=crop',
-      color: 'blue' as const,
-      tech: ['LangChain', 'Gemini API', 'Docker', 'Google Cloud Run', 'Tavily API'],
-      highlights: [
-        'Architected a multi-agent autonomous system using LangChain\'s Deep Agent framework, orchestrating a hierarchy of specialized sub-agents to execute complex, multi-step health analysis tasks without human intervention.',
-        'Orchestrated a context-aware virtual file system and Deep Search capabilities (via Tavily API), enabling agents to autonomously verify real-time data and persist state through advanced context engineering strategies.',
-        'Deployed containerized architecture using Docker and Google Cloud Run, configuring the Gemini API for high-throughput inference and auto-scaling to handle variable request loads.',
-        'Presented final architecture and product demo to community college boards and Google leadership, demonstrating the practical application of AI agents in ed-tech and health-tech sectors.',
-      ],
+      id: 'role-1',
+      label: 'Software Engineer',
+      color: '#5865F2',
+      avatarUrl: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-12.png',
+      animation: 'pop',
     },
     {
-      title: 'Los Angeles Trade-Technical College',
-      subtitle: 'Software Engineering Volunteer',
-      date: 'June 2025 – August 2025',
-      role: 'Software Engineer',
-      image:
-        'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1600&auto=format&fit=crop',
-      color: 'green' as const,
-      tech: ['OpenAI Assistant API', 'Vector Stores', 'AWS Lambda', 'PDF Processing'],
-      highlights: [
-        'Engineered intelligent document processing pipeline using OpenAI\'s Assistant API and vector stores, autonomously parsing unstructured PDF recipe catalogs into structured JSON schemas automating weekly inventory procurement process.',
-        'Architected a serverless query agent on AWS Lambda, leveraging event-driven compute to handle real-time inventory inquiries (FIQ) and automate operational responses without provisioning dedicated infrastructure.',
-      ],
+      id: 'role-2',
+      label: 'Builder',
+      color: '#57F287',
+      avatarUrl: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-9.png',
+      animation: 'bounce',
     },
     {
-      title: 'StageDive',
-      subtitle: 'Audio Streaming Service',
-      date: 'January 2024 – June 2024',
-      role: 'Software Engineer - React',
-      image:
-        'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1600&auto=format&fit=crop',
-      color: 'purple' as const,
-      tech: ['React Query', 'React Suspense', 'Shadcn/UI', 'TypeScript', 'Zod'],
-      highlights: [
-        'Implemented React Query with React Suspense API to add loading states and error feedback, enhancing responsiveness and reliability, and simplifying asynchronous data management.',
-        'Customized Shadcn/UI TypeScript component library to ensure uniform design and component implementation, promoting a cohesive developer and user experience.',
-        'Optimized state management strategies to enhance page hydration, significantly improving user experience and performance while reducing client-side errors.',
-        'Reengineered user flow for account creation and music exploration, resulting in a more intuitive user journey and positive user feedback.',
-        'Utilized TypeScript Zod library for robust type checking and real-time feedback on user inputs, enhancing data integrity and user interaction.',
-      ],
+      id: 'role-3',
+      label: 'Audiophile',
+      color: '#FEE75C',
+      avatarUrl: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-13.png',
+      animation: 'float',
     },
     {
-      title: 'Open Source Labs',
-      subtitle: 'Kafka Nimbus - GUI for deploying Kafka Clusters',
-      date: 'March 2023 – December 2023',
-      role: 'Software Engineer - Full Stack',
-      image:
-        'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=1600&auto=format&fit=crop',
-      color: 'orange' as const,
-      tech: ['Next.js', 'Kafka', 'Prometheus', 'Grafana', 'MongoDB', 'tRPC', 'AWS-SDK'],
-      highlights: [
-        'Leveraged Next.js App Router Framework with new React client and server components, effectively optimizing page loading and hydration, resulting in faster initial load times and minimizing client-side requests.',
-        'Implemented file-based dynamic and static routing to orchestrate user flow in visually appealing and intuitive graphical interface.',
-        'Established a dynamic connection between Kafka servers and Prometheus to scrape real-time metrics from the cloud through HTTP request and response cycles for enhanced monitoring capabilities.',
-        'Implemented Grafana to develop informative dashboards, enabling the visualization of Kafka broker and topic metrics for enhanced data analysis and interactive graph-based monitoring.',
-        'Integrated an ORM framework with MongoDB database for streamlined schema migrations and simplified development operations.',
-        'Developed API routes using tRPC for seamless end-to-end type safety eliminating unnecessary runtime type errors.',
-        'Utilized the AWS-SDK to programmatically deploy and manage remote MSK clusters facilitating fast and intuitive experience for developers.',
-      ],
+      id: 'role-4',
+      label: 'Gamer',
+      color: '#EB459E',
+      avatarUrl: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-14.png',
+      animation: 'jitter',
+    },
+    {
+      id: 'role-5',
+      label: 'Artist',
+      color: '#F97316',
+      avatarUrl: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-6.png',
+      animation: 'spin',
+    },
+    {
+      id: 'role-6',
+      label: 'CS Student',
+      color: '#00B0F4',
+      avatarUrl: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-15.png',
+      animation: 'glow',
     },
   ]
 
-  const quickActions: QuickAction[] = [
+  const connections: ProfileConnection[] = [
     {
-      title: 'GitHub Contributions',
-      description: 'Navigate your repository history.',
-      href: 'https://github.com/paulvachon?tab=contributions',
-      icon: Github,
+      id: 'github',
+      label: 'github.com/paulvachon',
+      href: 'https://github.com/paulvachon',
+      iconUrl: githubIconUrl,
     },
     {
-      title: 'Art Showcase',
-      description: 'Blender + Unreal Engine explorations.',
-      href: 'https://www.artstation.com/',
-      icon: Palette,
+      id: 'website',
+      label: 'paulvachon.dev',
+      href: 'https://paulvachon.dev',
     },
     {
-      title: 'Game/Song Recommendations',
-      description: 'Steam favorites + electronic production.',
-      href: 'https://open.spotify.com/',
-      icon: Music,
+      id: 'twitter',
+      label: '@paulvdev',
+      href: 'https://twitter.com/paulvdev',
     },
+  ]
+
+  const mutualServers: MutualServer[] = [
+    { id: 'server-1', name: 'Portfolio Lab', description: '1 mutual server' },
+    { id: 'server-2', name: 'Open Source', description: '3 mutual servers' },
+    { id: 'server-3', name: 'Audio Projects', description: '2 mutual servers' },
   ]
 
   return (
-    <div className="flex-1 flex min-h-0">
-      <SidebarNavigation sections={sections} />
-      <main className="flex-1 flex flex-col bg-discord-chat min-h-0 overflow-y-auto">
-        <ProfileHeader
-          bannerUrl={bannerUrl}
-          avatarUrl={avatarUrl}
-          profileBadges={profileBadges}
-        />
-        <section className="px-6 pb-12">
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
-            <div className="space-y-6">
-              <InfoCard />
-              <QuickActionsList actions={quickActions} />
+    <div className="flex-1 flex min-h-0 bg-discord-chat overflow-y-auto">
+      <main className="flex-1">
+        <section className="px-6 py-8">
+          <div className="w-full max-w-6xl mx-auto flex flex-col lg:flex-row gap-6 items-start">
+            <div className="w-full lg:w-[360px] shrink-0">
+              <ProfileCard
+                bannerUrl={bannerUrl}
+                avatarUrl={avatarUrl}
+                profileBadges={profileBadges}
+                name="Paul Vachon"
+                username="paulvachon"
+                statusText="Buildin cool stuff"
+                location="Los Angeles, CA"
+                bio="When I'm on the roaaaaaad I see things going byyyyy."
+                memberSince="Feb 24, 2020"
+                roles={roles}
+                connections={connections}
+              />
             </div>
-            <ExperienceSection experiences={experiences} />
+            <ProfileTabsPanel mutualServers={mutualServers} />
           </div>
         </section>
       </main>

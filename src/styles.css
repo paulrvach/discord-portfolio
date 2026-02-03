@@ -188,13 +188,80 @@ code {
   .channel-item.active {
     @apply bg-discord-active text-white;
   }
-}
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
+  @font-face {
+    font-family: 'PLANK';
+    src: url('/PLANK___.TTF') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
   }
-  body {
-    @apply bg-background text-foreground;
+
+  .pixel-text {
+    font-family: 'PLANK', monospace;
+    letter-spacing: 0.1em;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    position: relative;
+    /* Animation removed - static glow */
+  }
+
+  .pixel-text::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+      transparent 0px,
+      transparent 2px,
+      rgba(0, 0, 0, 0.4) 2px,
+      rgba(0, 0, 0, 0.4) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+    animation: lcd-scanline 0.2s linear infinite;
+  }
+
+/* Removed pixel-text::after to keep only horizontal lines */
+
+  @keyframes lcd-flicker {
+    0% {
+      opacity: 0.85;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.4), 0 0 20px rgba(0, 255, 255, 0.2);
+    }
+    50% {
+      opacity: 1;
+      text-shadow: 0 0 12px rgba(0, 255, 136, 0.6), 0 0 24px rgba(0, 255, 255, 0.4);
+    }
+    100% {
+      opacity: 0.92;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.4), 0 0 20px rgba(0, 255, 255, 0.2);
+    }
+  }
+
+  @keyframes lcd-color-shift {
+    0%, 100% {
+      filter: hue-rotate(0deg) brightness(1) contrast(1.1);
+    }
+    25% {
+      filter: hue-rotate(5deg) brightness(1.05) contrast(1.15);
+    }
+    50% {
+      filter: hue-rotate(-3deg) brightness(0.98) contrast(1.12);
+    }
+    75% {
+      filter: hue-rotate(3deg) brightness(1.02) contrast(1.13);
+    }
+  }
+
+  @keyframes lcd-scanline {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 0 4px;
+    }
   }
 }
