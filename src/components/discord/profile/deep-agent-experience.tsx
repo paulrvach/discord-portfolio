@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
   CheckCircle2,
   ChevronDown,
@@ -26,8 +26,16 @@ type TimelineItem =
     title: string
     toolLabel: string
     summary: string
-    output: string
-    logs: string[]
+      outputData: {
+        query: string
+        topSignals: string[]
+        sourcesTarget: number
+      }
+      logs: Array<{
+        id: string
+        label: string
+        target: number
+      }>
   }
 
 const scenario = [
@@ -49,19 +57,15 @@ const scenario = [
       title: 'Searching Google',
       toolLabel: 'Tool: Google Search',
       summary: 'Collecting signals from recent releases, docs, and demos.',
-      output: `{
-  "query": "LangChain Deep Agents 2026 trends",
-  "topSignals": [
-    "tool orchestration UX patterns",
-    "structured agent traces",
-    "streaming tool results"
-  ],
-  "sources": 12
-}`,
+      outputData: {
+        query: 'LangChain Deep Agents 2026 trends',
+        topSignals: ['tool orchestration UX patterns', 'structured agent traces', 'streaming tool results'],
+        sourcesTarget: 12,
+      },
       logs: [
-        '[tool] google_search: 12 sources located',
-        '[tool] crawl_docs: parsed 18 sections',
-        '[tool] summarize: 4 key themes extracted',
+        { id: 'sources', label: '[tool] google_search: sources located', target: 12 },
+        { id: 'sections', label: '[tool] crawl_docs: sections parsed', target: 18 },
+        { id: 'themes', label: '[tool] summarize: key themes extracted', target: 4 },
       ],
     },
   },
@@ -86,6 +90,19 @@ const scenario = [
   },
 ]
 
+const buildOutput = (item: Extract<TimelineItem, { type: 'task' }>, progress: Record<string, number>) => {
+  const sourcesCount = Math.min(progress.sources ?? 0, item.outputData.sourcesTarget)
+  return `{
+  "query": "${item.outputData.query}",
+  "topSignals": [
+    "${item.outputData.topSignals[0]}",
+    "${item.outputData.topSignals[1]}",
+    "${item.outputData.topSignals[2]}"
+  ],
+  "sources": ${sourcesCount}
+}`
+}
+
 export function DeepAgentExperienceCard({ className }: { className?: string }) {
   const [timeline, setTimeline] = useState<TimelineItem[]>([])
   const [expandedSteps, setExpandedSteps] = useState({
@@ -93,7 +110,10 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
     thinking: true,
     tool: true,
   })
+  const [progress, setProgress] = useState<Record<string, number>>({})
   const timersRef = useRef<number[]>([])
+  const progressTimerRef = useRef<number | null>(null)
+  const scrollAnchorRef = useRef<HTMLDivElement | null>(null)
 
   const particles = useMemo(
     () =>
@@ -139,10 +159,16 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
               title: event.payload.title,
               toolLabel: event.payload.toolLabel,
               summary: event.payload.summary,
-              output: event.payload.output,
+              outputData: event.payload.outputData,
               logs: event.payload.logs,
             },
           ])
+          setProgress(
+            event.payload.logs.reduce<Record<string, number>>((acc, log) => {
+              acc[log.id] = 0
+              return acc
+            }, {})
+          )
           setExpandedSteps({ task: true, thinking: true, tool: true })
           return
         }
@@ -171,6 +197,54 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
       timersRef.current.forEach((timerId) => window.clearTimeout(timerId))
     }
   }, [])
+
+  useEffect(() => {
+    scrollAnchorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+  }, [timeline])
+
+  useEffect(() => {
+    const activeTask = timeline.find((item) => item.type === 'task') as
+      | Extract<TimelineItem, { type: 'task' }>
+      | undefined
+
+    if (!activeTask) return
+
+    if (progressTimerRef.current) {
+      window.clearInterval(progressTimerRef.current)
+      progressTimerRef.current = null
+    }
+
+    if (activeTask.status === 'running') {
+      progressTimerRef.current = window.setInterval(() => {
+        setProgress((prev) => {
+          const updated = { ...prev }
+          activeTask.logs.forEach((log) => {
+            const current = updated[log.id] ?? 0
+            if (current < log.target) {
+              const step = log.target > 10 ? 2 : 1
+              updated[log.id] = Math.min(log.target, current + step)
+            }
+          })
+          return updated
+        })
+      }, 300)
+    } else {
+      setProgress((prev) => {
+        const updated = { ...prev }
+        activeTask.logs.forEach((log) => {
+          updated[log.id] = log.target
+        })
+        return updated
+      })
+    }
+
+    return () => {
+      if (progressTimerRef.current) {
+        window.clearInterval(progressTimerRef.current)
+        progressTimerRef.current = null
+      }
+    }
+  }, [timeline])
 
   return (
     <div className={cn('relative w-full max-w-[460px] h-[560px] rounded-2xl overflow-hidden p-[2px]', className)}>
@@ -336,31 +410,65 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
                       </button>
                       {expandedSteps.tool && (
                         <pre className="whitespace-pre-wrap rounded-md bg-black/60 p-2 text-[11px] text-emerald-100">
-                          {item.output}
+                          {buildOutput(item, progress)}
                         </pre>
                       )}
                     </div>
 
                     <div className="space-y-2">
-                      {item.logs.map((log) => (
+                      {item.logs.map((log, logIndex) => {
+                        const currentValue = Math.min(progress[log.id] ?? 0, log.target)
+                        const isComplete = item.status === 'complete' || currentValue >= log.target
+                        return (
                         <div
-                          key={log}
+                          key={log.id}
                           className="flex items-center gap-2 rounded-md border border-white/10 bg-black/40 px-2 py-1 text-[11px] text-white/70"
                         >
-                          {item.status === 'complete' ? (
-                            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                          ) : (
-                            <Loader2 className="h-3.5 w-3.5 text-sky-300 animate-spin" />
-                          )}
-                          {log}
+                          <AnimatePresence mode="wait" initial={false}>
+                            {isComplete ? (
+                              <motion.span
+                                key={`${log.id}-check`}
+                                initial={{ scale: 0.6, rotate: -60, opacity: 0 }}
+                                animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                                exit={{ scale: 0.6, opacity: 0 }}
+                                transition={{ duration: 0.25, delay: logIndex * 0.05 }}
+                                className="inline-flex"
+                              >
+                                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                              </motion.span>
+                            ) : (
+                              <motion.span
+                                key={`${log.id}-spinner`}
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.8, opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="inline-flex"
+                              >
+                                <Loader2 className="h-3.5 w-3.5 text-sky-300 animate-spin" />
+                              </motion.span>
+                            )}
+                          </AnimatePresence>
+                          <span>{log.label}</span>
+                          <motion.span
+                            key={`${log.id}-${currentValue}`}
+                            initial={{ opacity: 0, y: 4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="ml-auto text-white/80"
+                          >
+                            {currentValue}/{log.target}
+                          </motion.span>
                         </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   </div>
                 )}
               </motion.div>
             )
           })}
+          <div ref={scrollAnchorRef} />
         </div>
 
         <div className="px-4 py-3 border-t border-white/10 relative z-10">
@@ -373,6 +481,54 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
             </span>
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+export function DeepAgentExperienceShowcase({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        'flex flex-col lg:flex-row gap-6 rounded-2xl border border-discord-divider bg-discord-dark p-4 lg:p-6',
+        className
+      )}
+    >
+      <div className="lg:w-[45%] space-y-4 text-sm text-discord-text-secondary">
+        <div className="space-y-2">
+          <p className="text-xs uppercase tracking-[0.2em] text-discord-text-muted">
+            Deep Agent Experience
+          </p>
+          <h3 className="text-2xl font-semibold text-discord-text-primary">
+            Google + LangChain Deep Agents
+          </h3>
+        </div>
+        <p className="leading-relaxed">
+          I led multi-agent workflow design with LangChain Deep Agents, focusing on
+          traceable tool usage, structured task visibility, and reviewer-ready outputs.
+        </p>
+        <div className="space-y-2">
+          {[
+            'Designed collapsible reasoning steps with status telemetry.',
+            'Built tool usage logs with progress metrics and audit trails.',
+            'Optimized human-in-the-loop UX for technical stakeholders.',
+          ].map((detail) => (
+            <div
+              key={detail}
+              className="flex items-start gap-2 rounded-lg border border-discord-divider bg-discord-darker px-3 py-2 text-xs text-discord-text-secondary"
+            >
+              <span className="mt-1 h-1.5 w-1.5 rounded-full bg-discord-green" />
+              <span>{detail}</span>
+            </div>
+          ))}
+        </div>
+        <div className="inline-flex items-center gap-2 rounded-full border border-discord-blurple/40 bg-discord-blurple/15 px-3 py-1 text-xs text-discord-text-primary">
+          <Sparkles className="h-3.5 w-3.5 text-discord-blurple" />
+          Deep Agents UI • Technical credibility
+        </div>
+      </div>
+      <div className="flex-1 flex justify-center lg:justify-end">
+        <DeepAgentExperienceCard />
       </div>
     </div>
   )

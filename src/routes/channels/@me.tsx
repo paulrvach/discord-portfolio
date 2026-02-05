@@ -130,7 +130,7 @@ function DMHome() {
     <div className="flex-1 flex min-h-0 bg-discord-chat overflow-y-auto">
       <main className="flex-1">
         <section className="px-6 py-8">
-          <div className="w-full max-w-6xl mx-auto flex flex-col lg:flex-row gap-6 items-start">
+          <div className="w-full max-w-[80%] mx-auto flex flex-col lg:flex-row gap-6 items-start">
             <div className="w-full lg:w-[360px] shrink-0">
               <ProfileCard
                 bannerUrl={bannerUrl}
