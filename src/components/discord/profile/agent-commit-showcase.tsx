@@ -147,8 +147,9 @@ type ScenarioEvent =
 
 export function AgentCommitShowcase({ className }: { className?: string }) {
   const [timeline, setTimeline] = useState<TimelineItem[]>([])
+  const [isInView, setIsInView] = useState(false)
   const timersRef = useRef<number[]>([])
-  const scrollAnchorRef = useRef<HTMLDivElement | null>(null)
+  const containerRef = useRef<HTMLDivElement | null>(null)
 
   const scenario = useMemo<ScenarioEvent[]>(() => {
     const events: ScenarioEvent[] = [
@@ -190,7 +191,34 @@ export function AgentCommitShowcase({ className }: { className?: string }) {
     return events
   }, [])
 
+  // Intersection Observer to detect when component is in view
   useEffect(() => {
+    if (!containerRef.current) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !isInView) {
+            setIsInView(true)
+          }
+        })
+      },
+      {
+        threshold: 0.1, // Trigger when 10% of the component is visible
+      }
+    )
+
+    observer.observe(containerRef.current)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [isInView])
+
+  // Start animation only when component is in view
+  useEffect(() => {
+    if (!isInView) return
+
     let elapsed = 0
     scenario.forEach((event) => {
       elapsed += event.delay
@@ -250,14 +278,10 @@ export function AgentCommitShowcase({ className }: { className?: string }) {
       timersRef.current.forEach((timerId) => window.clearTimeout(timerId))
       timersRef.current = []
     }
-  }, [scenario])
-
-  useEffect(() => {
-    scrollAnchorRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
-  }, [timeline])
+  }, [scenario, isInView])
 
   return (
-    <div className={cn("space-y-3", className)}>
+    <div ref={containerRef} className={cn("space-y-3", className)}>
       <div className="flex items-center justify-between">
         <h4 className="text-lg font-semibold text-discord-text-primary">
           Quick picks
@@ -420,7 +444,6 @@ export function AgentCommitShowcase({ className }: { className?: string }) {
                 return null
               })}
             </AnimatePresence>
-            <div ref={scrollAnchorRef} />
           </div>
         </CardContent>
       </Card>

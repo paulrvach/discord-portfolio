@@ -113,7 +113,7 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
   const [progress, setProgress] = useState<Record<string, number>>({})
   const timersRef = useRef<number[]>([])
   const progressTimerRef = useRef<number | null>(null)
-  const scrollAnchorRef = useRef<HTMLDivElement | null>(null)
+  const chatContainerRef = useRef<HTMLDivElement | null>(null)
 
   const particles = useMemo(
     () =>
@@ -199,7 +199,23 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
   }, [])
 
   useEffect(() => {
-    scrollAnchorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    if (!chatContainerRef.current) return
+    
+    const container = chatContainerRef.current
+    
+    const scrollToBottom = () => {
+      // Scroll only the container, not the window
+      container.scrollTop = container.scrollHeight
+    }
+    
+    // Wait for DOM updates and animations to complete
+    const timeoutId = setTimeout(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(scrollToBottom)
+      })
+    }, 100)
+    
+    return () => clearTimeout(timeoutId)
   }, [timeline])
 
   useEffect(() => {
@@ -293,7 +309,7 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
           </div>
         </div>
 
-        <div className="flex-1 px-4 py-3 overflow-y-auto space-y-3 text-sm flex flex-col relative z-10">
+        <div ref={chatContainerRef} className="flex-1 min-h-0 px-4 py-3 overflow-y-auto space-y-3 text-sm flex flex-col relative z-10">
           {timeline.map((item, index) => {
             if (item.type === 'message') {
               return (
@@ -468,7 +484,6 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
               </motion.div>
             )
           })}
-          <div ref={scrollAnchorRef} />
         </div>
 
         <div className="px-4 py-3 border-t border-white/10 relative z-10">

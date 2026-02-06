@@ -125,7 +125,7 @@ export function StageDiveExperienceShowcase({ className }: { className?: string 
         </div>
         <Separator className="bg-discord-divider" />
 
-        <Card className="rounded-2xl border-discord-divider bg-discord-darker p-4 lg:p-6">
+        <Card className="rounded-2xl border-none bg-transparent p-4 lg:p-6">
           <CardContent className="flex flex-col lg:flex-row gap-6 p-0">
             <div className="relative h-40 w-full max-w-[220px] rounded-xl bg-discord-hover overflow-hidden">
               {mainImageUrl ? (
@@ -225,7 +225,7 @@ export function StageDiveExperienceShowcase({ className }: { className?: string 
             return (
               <Card
                 key={card.id}
-                className="rounded-xl border-discord-divider bg-discord-darker p-4 space-y-3 transition-colors hover:bg-discord-hover"
+                className="rounded-xl border-none bg-discord-darker p-4 space-y-3 transition-colors hover:bg-discord-hover"
               >
                 <CardContent className="relative aspect-square rounded-lg bg-discord-hover overflow-hidden p-0">
                   {imageUrl ? (

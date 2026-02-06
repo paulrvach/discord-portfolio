@@ -26,7 +26,7 @@ export function ProfileTabsPanel({ mutualServers }: ProfileTabsPanelProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('servers')
 
   return (
-    <section className="flex-1 bg-discord-dark rounded-xl border border-discord-divider overflow-hidden shadow-xl ">
+    <section className="flex-1 bg-discord-dark rounded-xl overflow-hidden shadow-xl ">
       <div className="flex items-center gap-6 px-6 pt-5 border-b border-discord-divider">
         {tabs.map((tab) => {
           const Icon = tab.icon
