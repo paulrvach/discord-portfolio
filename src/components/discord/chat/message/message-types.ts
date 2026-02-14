@@ -32,3 +32,8 @@ export type AudioPayload = {
   storageId?: string
   url?: string
 }
+
+export type MarkdownPayload = {
+  storageId: string
+  url?: string
+}

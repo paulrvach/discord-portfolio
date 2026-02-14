@@ -21,6 +21,14 @@ export const getUrl = query({
   },
 })
 
+// Delete a file from storage by its storage ID
+export const deleteFile = mutation({
+  args: { storageId: v.id('_storage') },
+  handler: async (ctx, args) => {
+    await ctx.storage.delete(args.storageId)
+  },
+})
+
 // List recent storage files with signed URLs
 export const listRecent = query({
   args: {

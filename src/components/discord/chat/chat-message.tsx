@@ -8,18 +8,21 @@ import { MessageContent } from './message/message-content'
 import { GitHubEmbed } from './message/github-embed'
 import { MediaMessage } from './message/media-message'
 import { AudioMessage } from '@/components/discord/chat/message/audio-message'
+import { MarkdownMessage } from './message/markdown-message'
 import type {
   GitHubEmbed as GitHubEmbedType,
   MediaPayload,
   AudioPayload,
+  MarkdownPayload,
 } from './message/message-types'
 
 interface ChatMessageProps {
   message: Omit<Doc<'messages'>, 'type'> & {
-    type?: 'user' | 'bot' | 'media' | 'audio'
+    type?: 'user' | 'bot' | 'media' | 'audio' | 'markdown'
     embed?: GitHubEmbedType
     media?: MediaPayload
     audio?: AudioPayload
+    markdown?: MarkdownPayload
     user: {
       _id: Id<'users'>
       name: string
@@ -34,6 +37,7 @@ export function ChatMessage({ message, isCompact }: ChatMessageProps) {
   const isBotMessage = message.type === 'bot' || message.embed?.type === 'github'
   const isMediaMessage = message.type === 'media' && Boolean(message.media)
   const isAudioMessage = message.type === 'audio' && Boolean(message.audio)
+  const isMarkdownMessage = message.type === 'markdown' && Boolean(message.markdown)
   const embedTimestamp = message.embed?.timestamp ?? message._creationTime
   const embedTimeLabel = useMemo(
     () => formatTime(embedTimestamp),
@@ -47,7 +51,12 @@ export function ChatMessage({ message, isCompact }: ChatMessageProps) {
     .join('')
     .toUpperCase()
 
-  const showCompactLayout = isCompact && !isMediaMessage && !isAudioMessage && !message.embed
+  const showCompactLayout =
+    isCompact &&
+    !isMediaMessage &&
+    !isAudioMessage &&
+    !isMarkdownMessage &&
+    !message.embed
 
   if (showCompactLayout) {
     return (
@@ -74,7 +83,7 @@ export function ChatMessage({ message, isCompact }: ChatMessageProps) {
         </div>
 
         {/* Hover Actions */}
-        {isHovered && <MessageActions />}
+        {isHovered && <MessageActions copyText={message.content} />}
       </div>
     )
   }
@@ -105,7 +114,7 @@ export function ChatMessage({ message, isCompact }: ChatMessageProps) {
             timeLabel={formatTime(message._creationTime)}
           />
 
-          {!message.embed && !isMediaMessage && !isAudioMessage && (
+          {!message.embed && !isMediaMessage && !isAudioMessage && !isMarkdownMessage && (
             <MessageContent content={message.content} editedAt={message.editedAt} />
           )}
 
@@ -115,11 +124,14 @@ export function ChatMessage({ message, isCompact }: ChatMessageProps) {
 
           {isMediaMessage && message.media && <MediaMessage media={message.media} />}
           {isAudioMessage && message.audio && <AudioMessage audio={message.audio} />}
+          {isMarkdownMessage && message.markdown && (
+            <MarkdownMessage markdown={message.markdown} />
+          )}
         </div>
       </div>
 
       {/* Hover Actions */}
-      {isHovered && <MessageActions />}
+      {isHovered && <MessageActions copyText={message.content} />}
     </div>
   )
 }

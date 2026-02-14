@@ -8,6 +8,14 @@ const BOT_USER = {
   imageUrl: 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png',
 }
 
+// Get a single message by ID
+export const getById = query({
+  args: { messageId: v.id('messages') },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.messageId)
+  },
+})
+
 // List messages for a channel (with user data)
 export const listByChannel = query({
   args: { channelId: v.id('channels') },
@@ -18,7 +26,7 @@ export const listByChannel = query({
       .order('desc')
       .take(100)
 
-    // Fetch user data and resolve audio URLs for each message
+    // Fetch user data and resolve audio/markdown URLs for each message
     const messagesWithUsers = await Promise.all(
       messages.map(async (message) => {
         // Resolve audio URL from storageId if present
@@ -33,10 +41,22 @@ export const listByChannel = query({
           }
         }
 
+        // Resolve markdown URL from storageId if present
+        let resolvedMarkdown: { storageId: string; url?: string } | undefined =
+          undefined
+        if (message.markdown?.storageId) {
+          const markdownUrl = await ctx.storage.getUrl(message.markdown.storageId)
+          resolvedMarkdown = {
+            storageId: message.markdown.storageId,
+            url: markdownUrl ?? undefined,
+          }
+        }
+
         if (!message.userId) {
           return {
             ...message,
             audio: resolvedAudio,
+            markdown: resolvedMarkdown ?? message.markdown,
             user: BOT_USER,
           }
         }
@@ -45,6 +65,7 @@ export const listByChannel = query({
         return {
           ...message,
           audio: resolvedAudio,
+          markdown: resolvedMarkdown ?? message.markdown,
           user: {
             _id: user!._id,
             name: user!.name,
@@ -225,6 +246,39 @@ export const updateAudioUrl = mutation({
     })
 
     return { success: true }
+  },
+})
+
+// Create a markdown message from a stored .md file
+export const createMarkdownMessage = mutation({
+  args: {
+    channelId: v.id('channels'),
+    storageId: v.id('_storage'),
+    content: v.optional(v.string()),
+    userId: v.optional(v.id('users')),
+  },
+  handler: async (ctx, args) => {
+    // For demo, use provided userId or get first user
+    let userId = args.userId
+    if (!userId) {
+      const users = await ctx.db.query('users').take(1)
+      if (!users[0]) throw new Error('No users found - please seed the database')
+      userId = users[0]._id
+    }
+
+    // Verify channel exists
+    const channel = await ctx.db.get(args.channelId)
+    if (!channel) throw new Error('Channel not found')
+
+    return await ctx.db.insert('messages', {
+      channelId: args.channelId,
+      userId,
+      content: args.content ?? '📄 Markdown Document',
+      type: 'markdown',
+      markdown: {
+        storageId: args.storageId,
+      },
+    })
   },
 })
 
