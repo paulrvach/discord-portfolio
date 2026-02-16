@@ -1,7 +1,12 @@
+import { useEffect } from 'react'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { useQuery } from 'convex/react'
+import { api } from '../../../convex/_generated/api'
 import { ServerRail } from '../../components/discord/navigation/server-rail'
 import { Skeleton } from '../../components/ui/skeleton'
 import { SidebarProvider, SidebarInset } from '../../components/ui/sidebar'
+import { useIdentityStore } from '../../stores/identity-store'
+import { AVATAR_STORAGE_ID } from '../../lib/constants'
 
 export const Route = createFileRoute('/channels')({
   component: ChannelsLayout,
@@ -31,6 +36,15 @@ function ChannelsLoading() {
 }
 
 function ChannelsLayout() {
+  const avatarUrl = useQuery(api.storage.getUrl, { storageId: AVATAR_STORAGE_ID })
+  const setAvatarUrl = useIdentityStore((s) => s.setAvatarUrl)
+
+  useEffect(() => {
+    if (avatarUrl !== undefined) {
+      setAvatarUrl(avatarUrl)
+    }
+  }, [avatarUrl, setAvatarUrl])
+
   return (
     <SidebarProvider
       defaultOpen={false}

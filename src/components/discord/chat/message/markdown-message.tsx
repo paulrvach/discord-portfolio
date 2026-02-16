@@ -166,7 +166,7 @@ export function MarkdownMessage({ markdown }: MarkdownMessageProps) {
 
   if (loading) {
     return (
-      <div className="mt-2 max-w-2xl rounded-md bg-discord-dark/60 border border-discord-divider p-4">
+      <div className="mt-2 max-w-2xl rounded-lg bg-white/6 backdrop-blur-md border border-white/10 shadow-lg p-4">
         <div className="flex items-center gap-2 text-sm text-discord-text-muted">
           <div className="h-4 w-4 animate-spin rounded-full border-2 border-discord-text-muted border-t-transparent" />
           Loading markdown...
@@ -177,7 +177,7 @@ export function MarkdownMessage({ markdown }: MarkdownMessageProps) {
 
   if (error) {
     return (
-      <div className="mt-2 max-w-2xl rounded-md bg-discord-dark/60 border border-red-500/30 p-4">
+      <div className="mt-2 max-w-2xl rounded-lg bg-white/6 backdrop-blur-md border border-red-500/20 shadow-lg p-4">
         <p className="text-sm text-red-400">{error}</p>
       </div>
     )
@@ -186,7 +186,7 @@ export function MarkdownMessage({ markdown }: MarkdownMessageProps) {
   if (!content) return null
 
   return (
-    <div className="mt-2 max-w-2xl rounded-md bg-discord-dark/60 border border-discord-divider p-6">
+    <div className="mt-2 max-w-2xl rounded-lg bg-white/6 backdrop-blur-md border border-white/10 shadow-lg p-6">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeSanitize]}

@@ -13,13 +13,14 @@ import {
 } from '../../ui/popover'
 import { useModalStore } from '../../../stores/modal-store'
 import { useAudioPlayerStore } from '../../../stores/audio-player-store'
+import { useIdentityStore } from '../../../stores/identity-store'
 import { cn } from '../../../lib/utils'
 
 export function UserPanel() {
   const openModal = useModalStore((state) => state.openModal)
   const isAudioPlayerActive = useAudioPlayerStore((state) => state.isActive && state.playlist.length > 0)
+  const avatarUrl = useIdentityStore((s) => s.avatarUrl)
 
-  // TODO: Get actual user from auth
   const user = {
     name: 'Paul V',
     username: 'paulrvach',
@@ -27,7 +28,6 @@ export function UserPanel() {
     customStatus: 'Buildin cool stuff',
     location: 'Irvine, CA',
     bio: 'Another Day in Pizza Paradise 🍕 ...',
-    imageUrl: undefined,
     memberSince: 'Dec 3, 2016',
     links: [
       { label: 'github', url: 'https://github.com/paulrvach' },
@@ -55,7 +55,7 @@ export function UserPanel() {
           >
             <div className="relative">
               <Avatar className="w-8 h-8">
-                <AvatarImage src={user.imageUrl} />
+                <AvatarImage src={avatarUrl ?? undefined} className='object-cover'/>
                 <AvatarFallback className="bg-discord-blurple text-white text-xs">
                   {initials}
                 </AvatarFallback>
@@ -81,7 +81,7 @@ export function UserPanel() {
             {/* Avatar with Status */}
             <div className="relative inline-block">
               <Avatar className="w-[80px] h-[80px] border-[6px] border-discord-dark">
-                <AvatarImage src={user.imageUrl} />
+                <AvatarImage src={avatarUrl ?? undefined} className='object-cover'/>  
                 <AvatarFallback className="bg-discord-blurple text-white text-2xl">
                   {initials}
                 </AvatarFallback>

@@ -60,23 +60,23 @@ export function StageDiveExperienceShowcase({ className }: { className?: string 
   const mainImageUrl = useQuery(api.storage.getUrl, {
     storageId: 'kg22fn446bqckb8zjz5130wf9h80kzbt',
   })
-  
+
   const componentImageUrl = useQuery(api.storage.getUrl, {
     storageId: 'kg21tnxck2gkxxhetx0y94tf9n80kqsq',
   })
-  
+
   const streamingImageUrl = useQuery(api.storage.getUrl, {
     storageId: 'kg24h77s8zqv3yykzznxswnb6980j82k',
   })
-  
+
   const designImageUrl = useQuery(api.storage.getUrl, {
     storageId: 'kg25p48txxfeb6qtbx4z23n07580kh9y',
   })
-  
+
   const audioImageUrl = useQuery(api.storage.getUrl, {
     storageId: 'kg2eshgawqaj50zajgm2etwacd80jea0',
   })
-  
+
   const albumImageUrls: Record<string, string | undefined> = {
     components: componentImageUrl || undefined,
     streaming: streamingImageUrl || undefined,
@@ -256,30 +256,7 @@ export function StageDiveExperienceShowcase({ className }: { className?: string 
         </div>
       </div>
 
-      <AgentCommitShowcase />
 
-      <Card className="rounded-xl border-discord-divider bg-discord-darker px-4 py-3">
-        <CardContent className="flex flex-wrap items-center justify-between gap-4 p-0">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-lg bg-discord-hover" />
-            <div>
-              <CardTitle className="text-sm font-semibold text-discord-text-primary">
-                Stage Dive UI Library
-              </CardTitle>
-              <p className="text-xs text-discord-text-muted">
-                Now building: streaming surfaces
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 text-xs text-discord-text-muted">
-            <Clock3 className="h-4 w-4" />
-            02:14 / 04:32
-          </div>
-        </CardContent>
-        <div className="mt-3 h-2 rounded-full bg-discord-hover overflow-hidden">
-          <div className="h-full w-[55%] bg-discord-blurple" />
-        </div>
-      </Card>
     </Card>
   )
 }

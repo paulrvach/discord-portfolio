@@ -1,6 +1,23 @@
 import { v } from 'convex/values'
 import { query, mutation } from './_generated/server'
 
+// List all channels across all servers (for admin/CLI tools)
+export const listAll = query({
+  args: {},
+  handler: async (ctx) => {
+    const channels = await ctx.db.query('channels').collect()
+    return await Promise.all(
+      channels.map(async (channel) => {
+        const server = await ctx.db.get(channel.serverId)
+        return {
+          ...channel,
+          serverName: server?.name ?? 'Unknown',
+        }
+      })
+    )
+  },
+})
+
 // List channels for a server
 export const listByServer = query({
   args: { serverId: v.id('servers') },

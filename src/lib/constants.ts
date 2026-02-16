@@ -41,6 +41,11 @@ export const DEFAULT_IMAGES = {
   serverIcon: '/default-server.png',
 } as const
 
+// Convex storage IDs for profile assets
+export const AVATAR_STORAGE_ID = 'kg22ekd3tpraawxc6q7gg1tyw58018ha'
+export const BANNER_STORAGE_ID = 'kg20412jssev9jrjnphk7c75e98013hv'
+export const GITHUB_ICON_STORAGE_ID = 'kg24xc30sp8njsr8kg9nd82eg9801tf9'
+
 // Time formatting helpers
 export function formatMessageTime(timestamp: number): string {
   const date = new Date(timestamp)

@@ -144,31 +144,13 @@ export const seedDatabase = mutation({
       order: 1,
     })
 
-    const generalChannel = await ctx.db.insert('channels', {
-      serverId,
-      name: 'general',
-      type: 'text',
-      categoryId: textCategory,
-      topic: 'General discussion for CS38',
-      order: 0,
-    })
-
-    const homeworkChannel = await ctx.db.insert('channels', {
-      serverId,
-      name: 'homework-help',
-      type: 'text',
-      categoryId: textCategory,
-      topic: 'Ask questions about assignments',
-      order: 1,
-    })
-
     await ctx.db.insert('channels', {
       serverId,
       name: 'projects',
       type: 'text',
       categoryId: textCategory,
       topic: 'Share and discuss your projects',
-      order: 2,
+      order: 0,
     })
 
     const showcaseChannel = await ctx.db.insert('channels', {
@@ -177,7 +159,7 @@ export const seedDatabase = mutation({
       type: 'text',
       categoryId: textCategory,
       topic: 'Art, media, and visual experiments',
-      order: 3,
+      order: 1,
     })
 
     await ctx.db.insert('channels', {
@@ -195,69 +177,6 @@ export const seedDatabase = mutation({
       categoryId: voiceCategory,
       order: 1,
     })
-
-    // Create sample messages in general channel
-    await Promise.all([
-      ctx.db.insert('messages', {
-        channelId: generalChannel,
-        userId: paulId,
-        content: 'Welcome to CS38! Excited to have everyone here this semester.',
-      }),
-      ctx.db.insert('messages', {
-        channelId: generalChannel,
-        userId: sarahId,
-        content: 'Hey everyone! Looking forward to learning together 🎉',
-      }),
-      ctx.db.insert('messages', {
-        channelId: generalChannel,
-        userId: alexId,
-        content: 'Has anyone started looking at the first assignment yet?',
-      }),
-      ctx.db.insert('messages', {
-        channelId: generalChannel,
-        userId: jordanId,
-        content: 'I just started! The setup instructions were pretty straightforward.',
-      }),
-      ctx.db.insert('messages', {
-        channelId: generalChannel,
-        userId: alexId,
-        content: 'Nice! I\'m having some trouble with the dev environment. Anyone using VS Code?',
-      }),
-      ctx.db.insert('messages', {
-        channelId: generalChannel,
-        userId: paulId,
-        content: 'VS Code works great! Make sure you have the recommended extensions installed.',
-      }),
-      ctx.db.insert('messages', {
-        channelId: generalChannel,
-        userId: taylorId,
-        content: 'The TypeScript extension is a must-have for this class',
-      }),
-      ctx.db.insert('messages', {
-        channelId: generalChannel,
-        userId: jamieId,
-        content: 'Just pushed my first commit! This is going to be a fun semester.',
-      }),
-    ])
-
-    // Add messages to homework channel
-    await Promise.all([
-      ctx.db.insert('messages', {
-        channelId: homeworkChannel,
-        userId: alexId,
-        content: 'Question about problem 3 - are we supposed to handle edge cases for empty arrays?',
-      }),
-      ctx.db.insert('messages', {
-        channelId: homeworkChannel,
-        userId: sarahId,
-        content: 'Yes! The spec mentions that we should return null for empty input.',
-      }),
-      ctx.db.insert('messages', {
-        channelId: homeworkChannel,
-        userId: alexId,
-        content: 'Thanks Sarah! I missed that part.',
-      }),
-    ])
 
     // Add media showcase messages
     await Promise.all([

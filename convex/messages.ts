@@ -249,6 +249,73 @@ export const updateAudioUrl = mutation({
   },
 })
 
+// Create a media message with explicit image URLs (for CLI sync scripts)
+export const createMediaDirect = mutation({
+  args: {
+    channelId: v.id('channels'),
+    title: v.string(),
+    caption: v.string(),
+    tags: v.array(v.string()),
+    externalUrl: v.optional(v.string()),
+    imageUrls: v.array(v.string()),
+    userId: v.optional(v.id('users')),
+  },
+  handler: async (ctx, args) => {
+    let userId = args.userId
+    if (!userId) {
+      const users = await ctx.db.query('users').take(1)
+      if (!users[0]) throw new Error('No users found - please seed the database')
+      userId = users[0]._id
+    }
+
+    const channel = await ctx.db.get(args.channelId)
+    if (!channel) throw new Error('Channel not found')
+
+    if (!args.imageUrls.length) {
+      throw new Error('At least one image URL is required')
+    }
+
+    return await ctx.db.insert('messages', {
+      channelId: args.channelId,
+      userId,
+      content: args.title,
+      type: 'media',
+      media: {
+        title: args.title,
+        caption: args.caption,
+        tags: args.tags,
+        externalUrl: args.externalUrl,
+        images: args.imageUrls,
+      },
+    })
+  },
+})
+
+// Append images to an existing media message
+export const appendMediaImages = mutation({
+  args: {
+    messageId: v.id('messages'),
+    imageUrls: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const message = await ctx.db.get(args.messageId)
+    if (!message) throw new Error('Message not found')
+    if (message.type !== 'media' || !message.media) {
+      throw new Error('Message is not a media message')
+    }
+
+    await ctx.db.patch(args.messageId, {
+      media: {
+        ...message.media,
+        images: [...message.media.images, ...args.imageUrls],
+      },
+      editedAt: Date.now(),
+    })
+
+    return args.messageId
+  },
+})
+
 // Create a markdown message from a stored .md file
 export const createMarkdownMessage = mutation({
   args: {

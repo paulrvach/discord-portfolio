@@ -24,6 +24,16 @@ export function ChatSkeleton() {
   )
 }
 
+export function ChatMessagesSkeleton() {
+  return (
+    <div className="px-4 py-4 space-y-4">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <MessageSkeleton key={i} isCompact={i % 3 !== 0} />
+      ))}
+    </div>
+  )
+}
+
 function MessageSkeleton({ isCompact }: { isCompact: boolean }) {
   if (isCompact) {
     return (
@@ -35,7 +45,7 @@ function MessageSkeleton({ isCompact }: { isCompact: boolean }) {
 
   return (
     <div className="flex gap-4 mt-4">
-      <Skeleton className="w-10 h-10 rounded-full bg-discord-hover flex-shrink-0" />
+      <Skeleton className="w-10 h-10 rounded-full bg-discord-hover shrink-0" />
       <div className="flex-1 space-y-2">
         <div className="flex items-center gap-2">
           <Skeleton className="w-24 h-4 rounded bg-discord-hover" />

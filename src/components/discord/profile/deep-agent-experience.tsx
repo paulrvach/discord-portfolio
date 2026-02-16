@@ -537,7 +537,7 @@ export function DeepAgentExperienceShowcase({ className }: { className?: string 
             </div>
           ))}
         </div>
-        <div className="inline-flex items-center gap-2 rounded-full border border-discord-blurple/40 bg-discord-blurple/15 px-3 py-1 text-xs text-discord-text-primary">
+        <div className="inline-flex items-center gap-2 rounded-full border border-discord-blurple/40 bg-discord-blurple/15 px-3 py-1 text-xs text-discord-text-primary shadow-[0_0_20px_rgba(88,101,242,0.6)]">
           <Sparkles className="h-3.5 w-3.5 text-discord-blurple" />
           Deep Agents UI • Technical credibility
         </div>

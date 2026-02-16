@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect } from 'react'
+import { useRef, useEffect } from 'react'
 import { useMutation } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
 import { Plus, Gift, Sticker, Smile } from 'lucide-react'
+import { useChatStore } from '../../../stores/chat-store'
 import type { Id } from '../../../../convex/_generated/dataModel'
 
 interface ChatInputProps {
@@ -10,9 +11,12 @@ interface ChatInputProps {
 }
 
 export function ChatInput({ channelId, channelName }: ChatInputProps) {
-  const [content, setContent] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  
+  const channelIdKey = String(channelId)
+  const content = useChatStore((state) => state.draftByChannel[channelIdKey] ?? '')
+  const setDraft = useChatStore((state) => state.setDraft)
+  const clearDraft = useChatStore((state) => state.clearDraft)
+
   const sendMessage = useMutation(api.messages.send)
 
   // Auto-resize textarea
@@ -34,7 +38,7 @@ export function ChatInput({ channelId, channelName }: ChatInputProps) {
         channelId,
         content: content.trim(),
       })
-      setContent('')
+      clearDraft(channelIdKey)
     } catch (error) {
       console.error('Failed to send message:', error)
     }
@@ -63,7 +67,7 @@ export function ChatInput({ channelId, channelName }: ChatInputProps) {
           <textarea
             ref={textareaRef}
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={(e) => setDraft(channelIdKey, e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={`Message #${channelName}`}
             className="w-full bg-transparent text-discord-text-primary placeholder:text-discord-text-muted resize-none max-h-[200px] focus:outline-none text-base leading-relaxed"

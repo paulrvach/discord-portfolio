@@ -1,10 +1,11 @@
 import type { CSSProperties } from 'react'
 import { motion, type MotionProps } from 'framer-motion'
-import { CalendarDays, MoreHorizontal, UserPlus, MessageCircle, MapPin } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
+import { MoreHorizontal, UserPlus, MessageCircle, MapPin, Github, Linkedin } from 'lucide-react'
 import { Badge } from '../../ui/badge'
 import { Button } from '../../ui/button'
 import { Separator } from '../../ui/separator'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '../../ui/hover-card'
+import { WebsitePreview } from './website-preview'
 import { cn } from '@/lib/utils'
 import { ProfileHeader } from './profile-header'
 import type { ProfileBadge } from './types'
@@ -32,8 +33,6 @@ interface ProfileCardProps {
   username: string
   statusText: string
   location: string
-  bio: string
-  memberSince: string
   roles: ProfileRole[]
   connections: ProfileConnection[]
 }
@@ -46,8 +45,6 @@ export function ProfileCard({
   username,
   statusText,
   location,
-  bio,
-  memberSince,
   roles,
   connections,
 }: ProfileCardProps) {
@@ -248,10 +245,6 @@ export function ProfileCard({
           <span>{location}</span>
         </div>
 
-        <div className="rounded-lg bg-discord-darker border border-discord-divider p-3 text-sm text-discord-text-primary">
-          {bio}
-        </div>
-
         <div>
           <div className="text-xs uppercase tracking-wide text-discord-text-muted mb-2">
             Status
@@ -260,16 +253,6 @@ export function ProfileCard({
         </div>
 
         <Separator className="bg-discord-divider" />
-
-        <div>
-          <div className="text-xs uppercase tracking-wide text-discord-text-muted mb-2">
-            Member Since
-          </div>
-          <div className="flex items-center gap-2 text-sm text-discord-text-secondary">
-            <CalendarDays className="w-4 h-4" />
-            <span>{memberSince}</span>
-          </div>
-        </div>
 
         <div>
           <div className="text-xs uppercase tracking-wide text-discord-text-muted mb-2">
@@ -311,24 +294,49 @@ export function ProfileCard({
           <div className="text-xs uppercase tracking-wide text-discord-text-muted mb-2">
             Connections
           </div>
-          <div className="space-y-2">
-            {connections.map((connection) => (
-              <a
-                key={connection.id}
-                href={connection.href}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-3 rounded-md bg-discord-darker border border-discord-divider px-3 py-2 text-sm text-discord-text-primary hover:bg-discord-hover transition-colors"
-              >
-                <Avatar className="h-7 w-7">
-                  <AvatarImage src={connection.iconUrl ?? undefined} />
-                  <AvatarFallback className="bg-discord-channel text-xs">
-                    {connection.label.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <span>{connection.label}</span>
-              </a>
-            ))}
+          <div className="space-y-1">
+            {connections.map((connection) => {
+              const isGitHub = connection.href?.includes('github.com')
+              const isLinkedIn = connection.href?.includes('linkedin.com')
+              
+              // Parse label to separate website name and username
+              const labelParts = connection.label.split(' ')
+              const websiteName = labelParts[0]
+              const username = labelParts.slice(1).join(' ').replace(' - Overview', '').trim()
+              
+              return (
+                <HoverCard key={connection.id} openDelay={200} closeDelay={100}>
+                  <HoverCardTrigger asChild>
+                    <a
+                      href={connection.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 text-sm text-discord-text-primary hover:text-discord-text-primary/80 transition-colors cursor-pointer"
+                    >
+                      {isGitHub && <Github className="h-4 w-4 shrink-0 text-white" />}
+                      {isLinkedIn && <Linkedin className="h-4 w-4 shrink-0 text-white" />}
+                      {!isGitHub && !isLinkedIn && connection.iconUrl && (
+                        <img src={connection.iconUrl} alt={websiteName} className="h-4 w-4 shrink-0" />
+                      )}
+                      <span>
+                        <span className="font-semibold">{websiteName}</span>
+                        {username && <span className="text-discord-text-secondary"> {username}</span>}
+                      </span>
+                    </a>
+                  </HoverCardTrigger>
+                  {connection.href && (
+                    <HoverCardContent
+                      side="right"
+                      align="start"
+                      sideOffset={8}
+                      className="p-0 border-none bg-transparent shadow-none z-50"
+                    >
+                      <WebsitePreview url={connection.href} />
+                    </HoverCardContent>
+                  )}
+                </HoverCard>
+              )
+            })}
           </div>
         </div>
       </div>

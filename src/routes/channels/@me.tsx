@@ -3,12 +3,10 @@ import { useQuery } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import { GraduationCap, MapPin, Github, Code2 } from 'lucide-react'
 import { ProfileCard, type ProfileConnection, type ProfileRole } from '../../components/discord/profile/profile-card'
-import { ProfileTabsPanel, type MutualServer } from '../../components/discord/profile/profile-tabs-panel'
+import { ProfileTabsPanel } from '../../components/discord/profile/profile-tabs-panel'
 import { ProfileBadge } from '../../components/discord/profile/types'
-
-const BANNER_STORAGE_ID = 'kg20412jssev9jrjnphk7c75e98013hv'
-const AVATAR_STORAGE_ID = 'kg22ekd3tpraawxc6q7gg1tyw58018ha'
-const GITHUB_ICON_STORAGE_ID = 'kg24xc30sp8njsr8kg9nd82eg9801tf9'
+import { useIdentityStore } from '../../stores/identity-store'
+import { BANNER_STORAGE_ID, GITHUB_ICON_STORAGE_ID } from '../../lib/constants'
 
 export const Route = createFileRoute('/channels/@me')({
   component: DMHome,
@@ -16,7 +14,7 @@ export const Route = createFileRoute('/channels/@me')({
 
 function DMHome() {
   const bannerUrl = useQuery(api.storage.getUrl, { storageId: BANNER_STORAGE_ID })
-  const avatarUrl = useQuery(api.storage.getUrl, { storageId: AVATAR_STORAGE_ID })
+  const avatarUrl = useIdentityStore((s) => s.avatarUrl)
   const githubIconUrl = useQuery(api.storage.getUrl, { storageId: GITHUB_ICON_STORAGE_ID })
 
   const profileBadges: ProfileBadge[] = [
@@ -103,53 +101,36 @@ function DMHome() {
 
   const connections: ProfileConnection[] = [
     {
+      id: 'linkedin',
+      label: 'LinkedIn paul-vachon',
+      href: 'https://www.linkedin.com/in/paul-vachon/',
+    },
+    {
       id: 'github',
-      label: 'github.com/paulvachon',
-      href: 'https://github.com/paulvachon',
+      label: 'GitHub paulrvach',
+      href: 'https://github.com/paulrvach',
       iconUrl: githubIconUrl,
     },
-    {
-      id: 'website',
-      label: 'paulvachon.dev',
-      href: 'https://paulvachon.dev',
-    },
-    {
-      id: 'twitter',
-      label: '@paulvdev',
-      href: 'https://twitter.com/paulvdev',
-    },
-  ]
-
-  const mutualServers: MutualServer[] = [
-    { id: 'server-1', name: 'Portfolio Lab', description: '1 mutual server' },
-    { id: 'server-2', name: 'Open Source', description: '3 mutual servers' },
-    { id: 'server-3', name: 'Audio Projects', description: '2 mutual servers' },
   ]
 
   return (
-    <div className="flex-1 flex min-h-0 bg-discord-chat overflow-y-auto">
-      <main className="flex-1">
-        <section className="px-6 py-8">
-          <div className="w-full max-w-[80%] mx-auto flex flex-col lg:flex-row gap-6 items-start">
-            <div className="w-full lg:w-[360px] shrink-0">
-              <ProfileCard
-                bannerUrl={bannerUrl}
-                avatarUrl={avatarUrl}
-                profileBadges={profileBadges}
-                name="Paul Vachon"
-                username="paulvachon"
-                statusText="Buildin cool stuff"
-                location="Los Angeles, CA"
-                bio="When I'm on the roaaaaaad I see things going byyyyy."
-                memberSince="Feb 24, 2020"
-                roles={roles}
-                connections={connections}
-              />
-            </div>
-            <ProfileTabsPanel mutualServers={mutualServers} />
-          </div>
-        </section>
-      </main>
+    <div className="flex-1 flex flex-col min-h-0 bg-discord-chat">
+      <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-6 w-full max-w-[80%] mx-auto px-6 py-8">
+        <div className="w-full lg:w-[360px] shrink-0">
+          <ProfileCard
+            bannerUrl={bannerUrl}
+            avatarUrl={avatarUrl}
+            profileBadges={profileBadges}
+            name="Paul Vachon"
+            username="paulvachon"
+            statusText="Another Day in Pizza Paradise 🍕"
+            location="Orange County, CA"
+            roles={roles}
+            connections={connections}
+          />
+        </div>
+        <ProfileTabsPanel />
+      </div>
     </div>
   )
 }
