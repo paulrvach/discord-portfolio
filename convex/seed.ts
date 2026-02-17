@@ -178,6 +178,15 @@ export const seedDatabase = mutation({
       order: 1,
     })
 
+    await ctx.db.insert('channels', {
+      serverId,
+      name: 'side-projects',
+      type: 'text',
+      categoryId: textCategory,
+      topic: 'Side projects and experiments',
+      order: 4,
+    })
+
     // Add media showcase messages
     await Promise.all([
       ctx.db.insert('messages', {

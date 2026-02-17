@@ -42,7 +42,6 @@ export function ServerRail() {
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarSeparator className="bg-discord-divider w-8 mx-auto my-2" />
     </Sidebar>
   )
 }

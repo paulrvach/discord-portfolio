@@ -1,4 +1,4 @@
-import { Mic, Headphones, Settings, Pencil, ArrowRightLeft, Copy, Pin, LocateIcon, PinIcon, MarsStroke, LocationEdit, MapPin } from 'lucide-react'
+import { Mic, Headphones, Settings } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
 import {
   Tooltip,
@@ -15,6 +15,7 @@ import { useModalStore } from '../../../stores/modal-store'
 import { useAudioPlayerStore } from '../../../stores/audio-player-store'
 import { useIdentityStore } from '../../../stores/identity-store'
 import { cn } from '../../../lib/utils'
+import { UserProfileCard } from './user-profile-card'
 
 export function UserPanel() {
   const openModal = useModalStore((state) => state.openModal)
@@ -73,113 +74,16 @@ export function UserPanel() {
             </div>
           </button>
         </PopoverTrigger>
-        <PopoverContent side="top" align="start" className="w-[340px] p-0 bg-discord-dark border shadow-xl overflow-hidden border-discord-divider rounded-2xl">
-          {/* Banner */}
-          <div className="h-[60px] bg-[#0047AB]" />
-
-          <div className="px-4 pb-4 -mt-10 relative">
-            {/* Avatar with Status */}
-            <div className="relative inline-block">
-              <Avatar className="w-[80px] h-[80px] border-[6px] border-discord-dark">
-                <AvatarImage src={avatarUrl ?? undefined} className='object-cover'/>  
-                <AvatarFallback className="bg-discord-blurple text-white text-2xl">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-              <div className="absolute bottom-1 right-1 w-6 h-6 bg-discord-green rounded-full border-[6px] border-discord-dark" />
-            </div>
-
-            {/* User Details */}
-            <div className="mt-3 p-3 bg-discord-darker rounded-lg">
-              <div className="font-semibold text-xl text-discord-text-primary">
-                {user.name}
-              </div>
-              <div className="text-discord-text-secondary text-sm">
-                {user.username}
-              </div>
-
-              <div className="mt-3 flex items-center gap-2 text-discord-text-primary text-sm">
-                <MapPin className='w-4 h-4'/><span>{user.location} </span>
-              </div>
-
-              <div className="mt-3 text-sm text-discord-text-primary">
-                {user.bio}
-              </div>
-
-              {/* Links */}
-              <div className="mt-3 pl-2 border-l-2 border-discord-divider space-y-1">
-                {user.links.map((link) => (
-                  <div key={link.label} className="text-sm">
-                    <span className="font-semibold text-discord-text-primary mr-2 capitalize">{link.label}:</span>
-                    <a 
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#00A8FC] hover:underline"
-                    >
-                      {link.url}
-                    </a>
-                  </div>
-                ))}
-              </div>
-
-              {/* Member Since */}
-              <div className="mt-4">
-                <div className="text-xs font-bold text-discord-text-primary uppercase mb-1">
-                  Member Since
-                </div>
-                <div className="text-sm text-discord-text-secondary">
-                  {user.memberSince}
-                </div>
-              </div>
-            </div>
-
-            {/* Actions Menu */}
-            <div className="mt-2 space-y-0.5">
-              <button
-                onClick={() => openModal('editProfile')}
-                className="w-full flex items-center justify-between px-2 py-1.5 rounded hover:bg-discord-blurple text-discord-text-secondary hover:text-white group transition-colors text-sm"
-              >
-                <div className="flex items-center gap-2">
-                  <Pencil className="w-4 h-4" />
-                  <span>Edit Profile</span>
-                </div>
-              </button>
-
-              <button className="w-full flex items-center justify-between px-2 py-1.5 rounded hover:bg-discord-blurple text-discord-text-secondary hover:text-white group transition-colors text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 flex items-center justify-center">
-                    <div className="w-2.5 h-2.5 bg-discord-green rounded-full" />
-                  </div>
-                  <span>Online</span>
-                </div>
-                <span className="opacity-0 group-hover:opacity-100 text-xs">
-                  <ArrowRightLeft className="w-3 h-3 rotate-90" />
-                </span>
-              </button>
-
-              <div className="h-[1px] bg-discord-divider my-1 mx-2" />
-
-              <button className="w-full flex items-center justify-between px-2 py-1.5 rounded hover:bg-discord-blurple text-discord-text-secondary hover:text-white group transition-colors text-sm">
-                <div className="flex items-center gap-2">
-                  <ArrowRightLeft className="w-4 h-4" />
-                  <span>Switch Accounts</span>
-                </div>
-                <span className="opacity-0 group-hover:opacity-100 text-xs">
-                  <ArrowRightLeft className="w-3 h-3" />
-                </span>
-              </button>
-
-              <div className="h-[1px] bg-discord-divider my-1 mx-2" />
-
-              <button className="w-full flex items-center justify-between px-2 py-1.5 rounded hover:bg-discord-blurple text-discord-text-secondary hover:text-white group transition-colors text-sm">
-                <div className="flex items-center gap-2">
-                  <Copy className="w-4 h-4" />
-                  <span>Copy User ID</span>
-                </div>
-              </button>
-            </div>
-          </div>
+        <PopoverContent
+          side="top"
+          align="start"
+          className="w-[min(92vw,360px)] border-none bg-transparent p-0 shadow-none"
+        >
+          <UserProfileCard
+            user={user}
+            avatarUrl={avatarUrl}
+            onEditProfile={() => openModal('editProfile')}
+          />
         </PopoverContent>
       </Popover>
 
