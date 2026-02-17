@@ -42,17 +42,17 @@ function TimelineItem({
             className={cn(
               'h-4 w-4 shrink-0 rounded-full border transition-colors',
               status === 'in-progress'
-                ? 'border-sky-300 bg-sky-300'
+                ? 'border-discord-blurple bg-discord-blurple'
                 : status === 'completed'
-                  ? 'border-sky-300/70 bg-sky-300/70'
-                  : 'border-white/20 bg-white/10'
+                  ? 'border-primary/70 bg-primary/90'
+                  : 'border-discord-divider bg-discord-divider'
             )}
           />
           {!isLast ? (
             <span
               className={cn(
                 'h-px flex-1 transition-colors',
-                status === 'completed' ? 'bg-sky-300/70' : 'bg-white/15'
+                status === 'completed' ? 'bg-primary/70' : 'bg-discord-divider'
               )}
             />
           ) : null}
@@ -60,7 +60,7 @@ function TimelineItem({
         <p
           className={cn(
             'mt-2 text-sm leading-tight font-semibold transition-opacity',
-            status === 'in-progress' ? 'text-discord-text-primary opacity-100' : 'text-discord-text-primary/60 opacity-70'
+            status === 'in-progress' ? 'text-discord-text-primary opacity-100' : 'text-discord-text-secondary opacity-90'
           )}
         >
           {title}

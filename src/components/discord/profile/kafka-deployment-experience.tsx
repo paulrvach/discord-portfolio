@@ -1,14 +1,7 @@
 import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
-import {
-  BarChart3,
-  Cloud,
-  Cpu,
-  Database,
-  PlayCircle,
-  Sparkles,
-  Workflow,
-} from 'lucide-react'
+import { Cloud, PlayCircle } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { Timeline, TimelineItem } from '@/components/ui/timeline'
 import {
   WebPreview,
@@ -78,6 +71,31 @@ function buildSparkline(values: number[], width = 180, height = 48) {
     .join(' ')
 }
 
+function getDiscordPreviewColors() {
+  if (typeof document === 'undefined') {
+    return {
+      background: '#313338',
+      text: '#dbdee1',
+      textMuted: '#949ba4',
+      label: '#80848e',
+      cardBg: 'rgba(255,255,255,0.03)',
+      border: 'rgba(255,255,255,0.08)',
+      accent: '#5865F2',
+    }
+  }
+  const root = document.documentElement
+  const s = getComputedStyle(root)
+  return {
+    background: s.getPropertyValue('--discord-chat').trim() || '#313338',
+    text: s.getPropertyValue('--discord-text-primary').trim() || '#dbdee1',
+    textMuted: s.getPropertyValue('--discord-text-secondary').trim() || '#949ba4',
+    label: s.getPropertyValue('--discord-text-muted').trim() || '#80848e',
+    cardBg: 'rgba(255,255,255,0.03)',
+    border: 'rgba(255,255,255,0.08)',
+    accent: s.getPropertyValue('--discord-blurple').trim() || '#5865F2',
+  }
+}
+
 function buildMonitoringPreviewHtml({
   uptimeValue,
   msgInValue,
@@ -85,6 +103,7 @@ function buildMonitoringPreviewHtml({
   uptimePoints,
   msgInPoints,
   msgOutPoints,
+  colors,
 }: {
   uptimeValue: number
   msgInValue: number
@@ -92,7 +111,17 @@ function buildMonitoringPreviewHtml({
   uptimePoints: string
   msgInPoints: string
   msgOutPoints: string
+  colors?: ReturnType<typeof getDiscordPreviewColors>
 }) {
+  const c = colors ?? {
+    background: '#0f1218',
+    text: '#cdd7e3',
+    textMuted: '#8a95a7',
+    label: '#8a95a7',
+    cardBg: 'rgba(255,255,255,0.03)',
+    border: 'rgba(255,255,255,0.08)',
+    accent: '#73b9ff',
+  }
   const brokerRowsHtml = brokerRows
     .map(
       (row) => `<tr>
@@ -113,8 +142,8 @@ function buildMonitoringPreviewHtml({
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body {
-        background: #0f1218;
-        color: #cdd7e3;
+        background: ${c.background};
+        color: ${c.text};
         font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         padding: 12px;
       }
@@ -122,7 +151,7 @@ function buildMonitoringPreviewHtml({
         font-size: 10px;
         letter-spacing: 0.18em;
         text-transform: uppercase;
-        color: #8a95a7;
+        color: ${c.label};
         margin-bottom: 10px;
       }
       .grid {
@@ -132,19 +161,19 @@ function buildMonitoringPreviewHtml({
       }
       .card {
         border-radius: 10px;
-        background: rgba(255,255,255,0.03);
+        background: ${c.cardBg};
         padding: 8px;
       }
       .label {
         font-size: 10px;
-        color: #8a95a7;
+        color: ${c.label};
       }
       .value {
         margin-top: 2px;
         font-size: 20px;
         line-height: 1;
         font-weight: 600;
-        color: #dbe8f7;
+        color: ${c.text};
       }
       svg {
         width: 100%;
@@ -153,12 +182,12 @@ function buildMonitoringPreviewHtml({
       }
       polyline {
         fill: none;
-        stroke: #73b9ff;
+        stroke: ${c.accent};
         stroke-width: 2;
       }
       .table-wrap {
         margin-top: 12px;
-        border-top: 1px solid rgba(255,255,255,0.08);
+        border-top: 1px solid ${c.border};
         padding-top: 10px;
       }
       table {
@@ -167,16 +196,16 @@ function buildMonitoringPreviewHtml({
         font-size: 11px;
       }
       th {
-        color: #8a95a7;
+        color: ${c.label};
         font-weight: 500;
         text-align: left;
         padding: 6px;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
+        border-bottom: 1px solid ${c.border};
       }
       td {
-        color: #cdd7e3;
+        color: ${c.text};
         padding: 6px;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
+        border-bottom: 1px solid ${c.border};
       }
       td.num, th.num {
         text-align: right;
@@ -289,6 +318,7 @@ export function KafkaDeploymentExperienceCard({ className }: { className?: strin
   const uptimeValue = series.uptime[series.uptime.length - 1]
   const msgInValue = series.msgIn[series.msgIn.length - 1]
   const msgOutValue = series.msgOut[series.msgOut.length - 1]
+  const previewColors = getDiscordPreviewColors()
   const monitoringHtml = buildMonitoringPreviewHtml({
     uptimeValue,
     msgInValue,
@@ -296,6 +326,7 @@ export function KafkaDeploymentExperienceCard({ className }: { className?: strin
     uptimePoints: buildSparkline(series.uptime),
     msgInPoints: buildSparkline(series.msgIn),
     msgOutPoints: buildSparkline(series.msgOut),
+    colors: previewColors,
   })
 
   return (
@@ -339,8 +370,8 @@ export function KafkaDeploymentExperienceCard({ className }: { className?: strin
             ))}
           </Timeline>
           <div className="rounded-lg bg-transparent px-1 py-1">
-            <p className="text-xs text-discord-text-muted">{currentStep.subtitle}</p>
-            <p className="mt-1 text-sm leading-relaxed text-discord-text-secondary">{currentStep.detail}</p>
+            <p className="text-xs text-discord-text-primary">{currentStep.subtitle}</p>
+            <p className="mt-1 text-sm leading-relaxed text-discord-text-primary">{currentStep.detail}</p>
           </div>
         </div>
 
@@ -348,9 +379,9 @@ export function KafkaDeploymentExperienceCard({ className }: { className?: strin
 
           <WebPreview
             defaultUrl="https://kafka-nimbus.local/monitoring"
-            className="overflow-hidden rounded-xl border-white/10 bg-[#0b0d12] h-full"
+            className="overflow-hidden rounded-xl border-discord-divider bg-discord-chat h-full"
           >
-            <WebPreviewNavigation className="gap-1 border-white/10 bg-white/5 p-1.5">
+            <WebPreviewNavigation className="gap-1 border-discord-divider bg-discord-dark p-1.5">
               <WebPreviewNavigationButton tooltip="Back">
                 <span className="text-[10px] text-discord-text-muted">{'<'}</span>
               </WebPreviewNavigationButton>
@@ -361,7 +392,7 @@ export function KafkaDeploymentExperienceCard({ className }: { className?: strin
                 <span className="text-[10px] text-discord-text-muted">{'R'}</span>
               </WebPreviewNavigationButton>
               <WebPreviewUrl
-                className="h-7 border-white/10 bg-[#0f1218] text-xs text-discord-text-muted"
+                className="h-7 border-discord-divider bg-discord-hover text-xs text-discord-text-muted placeholder:text-discord-text-muted"
                 readOnly
               />
             </WebPreviewNavigation>
@@ -382,50 +413,66 @@ export function KafkaDeploymentExperienceShowcase({ className }: { className?: s
         className
       )}
     >
-      <div className="lg:w-[42%] space-y-4 text-sm text-discord-text-secondary">
+      <div className="lg:w-1/3 flex min-h-0 flex-col gap-6 text-sm lg:min-h-[520px]">
+        {/* Header: icon + title, then description */}
         <div className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.2em] text-discord-text-muted">
-            Open Source Labs
+          <div className="flex items-center gap-2">
+            <Cloud className="h-6 w-6 text-sky-400/90 shrink-0" />
+            <h3 className="text-2xl font-semibold text-discord-text-primary">
+              Kafka Nimbus Deployment Experience
+            </h3>
+          </div>
+          <p className="text-sm text-discord-text-secondary leading-relaxed">
+            Open Source Labs (Kafka Nimbus) - GUI for deploying Kafka Clusters to the cloud.
+            This showcase simulates the operator dashboard I built around Next.js App Router
+            patterns, Prometheus metrics, Grafana-style monitoring, and AWS-SDK MSK management.
           </p>
-          <h3 className="text-xl font-semibold text-discord-text-primary">
-            Kafka Nimbus Deployment Experience
-          </h3>
         </div>
 
-        <p className="leading-relaxed">
-          Open Source Labs (Kafka Nimbus) - GUI for deploying Kafka Clusters to the cloud.
-          This showcase simulates the operator dashboard I built around Next.js App Router
-          patterns, Prometheus metrics, Grafana-style monitoring, and AWS-SDK MSK management.
-        </p>
+        {/* CTA button */}
+        <Button
+          variant="outline"
+          className="w-fit rounded-full border-white/20 bg-white/5 text-discord-text-primary hover:bg-white/10 hover:text-white"
+        >
+          Explore Kafka Nimbus
+        </Button>
 
+        {/* Steps at bottom */}
+        <div className="mt-auto flex flex-col">
+          <span className="text-sm font-medium text-discord-text-primary">
+            Create cluster request
+          </span>
+          <div className="mt-3 border-t border-discord-divider" />
 
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="inline-flex items-center gap-2 rounded-full border border-discord-blurple/50 bg-transparent px-2 py-1 text-xs text-discord-blurple">
-            <Workflow className="h-3.5 w-3.5 text-discord-blurple" />
-            Next.js App Router model
-          </div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-sky-300/50 bg-transparent px-2 py-1 text-xs text-sky-300">
-            <Cloud className="h-3.5 w-3.5 text-sky-300" />
-            AWS-SDK + MSK
-          </div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/50 bg-transparent px-2 py-1 text-xs text-cyan-300">
-            <BarChart3 className="h-3.5 w-3.5 text-sky-300" />
-            Prometheus/Grafana
-          </div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/50 bg-transparent px-2 py-1 text-xs text-emerald-300">
-            <Database className="h-3.5 w-3.5 text-emerald-300" />
-            MongoDB + ORM
-          </div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-fuchsia-300/50 bg-transparent px-2 py-1 text-xs text-fuchsia-300">
-            <Cpu className="h-3.5 w-3.5 text-fuchsia-300" />
-            <Sparkles className="h-3.5 w-3.5 text-fuchsia-300" />
-            tRPC type safety
+          <span className="mt-4 text-sm font-medium text-discord-text-primary">
+            Provision brokers &amp; networking
+          </span>
+          <div className="mt-3 border-t border-discord-divider" />
+
+          <div className="mt-4">
+            <span className="text-sm font-medium text-discord-text-primary">
+              Validate at scale
+            </span>
+            <p className="mt-1.5 text-xs text-discord-text-secondary leading-relaxed">
+              Review broker health, run metrics across the cluster, and confirm throughput.
+            </p>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 flex justify-center lg:justify-end">
-        <KafkaDeploymentExperienceCard />
+      <div className="flex-1 relative flex justify-center min-h-[520px] rounded-xl overflow-hidden">
+        {/* Background image: gamer / neon tech aesthetic */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-xl"
+          style={{
+            backgroundImage: `url(https://cdnb.artstation.com/p/assets/images/images/063/613/367/4k/mari-shot5-00000-copy-00000-copy.jpg?1685961874)`,
+          }}
+          aria-hidden
+        />
+        <div className="absolute inset-0 rounded-xl bg-linear-to-t from-transparent via-discord-dark/40 to-discord-dark/90" aria-hidden />
+        <div className="relative z-10 flex items-center justify-center py-6">
+          <KafkaDeploymentExperienceCard />
+        </div>
       </div>
     </div>
   )

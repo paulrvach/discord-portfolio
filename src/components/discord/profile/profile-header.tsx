@@ -95,7 +95,6 @@ export function ProfileHeader({
               </TooltipContent>
             </Tooltip>
 
-            <ProfileBadges badges={profileBadges} />
           </div>
 
           {showIdentity && (

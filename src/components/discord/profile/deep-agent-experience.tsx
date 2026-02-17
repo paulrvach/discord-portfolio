@@ -1,14 +1,16 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   CheckCircle2,
   ChevronDown,
+  Lightbulb,
   Loader2,
   Search,
   Sparkles,
   TerminalSquare,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 type TaskStatus = 'running' | 'complete'
 
@@ -114,18 +116,6 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
   const timersRef = useRef<number[]>([])
   const progressTimerRef = useRef<number | null>(null)
   const chatContainerRef = useRef<HTMLDivElement | null>(null)
-
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 20 }).map(() => ({
-        x: Math.random() * 200 - 100,
-        y: Math.random() * 200 - 100,
-        left: `${Math.random() * 100}%`,
-        duration: 5 + Math.random() * 3,
-        delay: Math.random() * 2,
-      })),
-    []
-  )
 
   useEffect(() => {
     let isActive = true
@@ -263,53 +253,31 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
   }, [timeline])
 
   return (
-    <div className={cn('relative w-full max-w-[460px] h-[560px] rounded-2xl overflow-hidden p-[2px]', className)}>
-      <motion.div
-        className="absolute inset-0 rounded-2xl border-2 border-white/20"
-        animate={{ rotate: [0, 360] }}
-        transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
-      />
-      <div className="relative flex flex-col w-full h-full rounded-xl border border-white/10 overflow-hidden bg-black/90 backdrop-blur-xl">
-        <motion.div
-          className="absolute inset-0 bg-linear-to-br from-gray-800 via-black to-gray-900"
-          animate={{ backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'] }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          style={{ backgroundSize: '200% 200%' }}
-        />
+    <div
+      className={cn(
+        'relative w-full max-w-[460px] h-[560px] rounded-2xl overflow-hidden',
+        'backdrop-blur-xl bg-black/15 border border-white/15 ',
+        'shadow-[0_8px_32px_rgba(0,0,0,0.45)]',
+        className,
+      )}
+    >
+    
 
-        {particles.map((particle, index) => (
-          <motion.div
-            key={`particle-${index}`}
-            className="absolute w-1 h-1 rounded-full bg-white/10"
-            animate={{
-              y: ['0%', '-140%'],
-              x: [particle.x, particle.y],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: particle.duration,
-              repeat: Infinity,
-              delay: particle.delay,
-              ease: 'easeInOut',
-            }}
-            style={{ left: particle.left, bottom: '-10%' }}
-          />
-        ))}
-
-        <div className="px-4 py-3 border-b border-white/10 relative z-10">
+      <div className="relative flex flex-col w-full h-full overflow-hidden">
+        <div className="px-4 py-3 border-b border-white/10 bg-black/60 relative z-10">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-semibold text-white">Deep Agent Experience</h2>
-              <p className="text-xs text-white/60">Google + LangChain Deep Agents</p>
+              <p className="text-xs text-white/75">Google + LangChain Deep Agents</p>
             </div>
-            <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
-              <Sparkles className="h-3.5 w-3.5" />
+            <div className="flex items-center gap-2 rounded-full border border-sky-400/40 bg-sky-500/20 px-3 py-1 text-xs text-sky-200 font-medium">
+              <Sparkles className="h-3.5 w-3.5 text-sky-300" />
               Live simulation
             </div>
           </div>
         </div>
 
-        <div ref={chatContainerRef} className="flex-1 min-h-0 px-4 py-3 overflow-y-auto space-y-3 text-sm flex flex-col relative z-10">
+        <div ref={chatContainerRef} className="flex-1 min-h-0 px-4 py-3 overflow-y-auto space-y-3 text-sm flex flex-col items-center relative z-10">
           {timeline.map((item, index) => {
             if (item.type === 'message') {
               return (
@@ -319,10 +287,10 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.25 }}
                   className={cn(
-                    'px-3 py-2 rounded-xl max-w-[85%] shadow-md backdrop-blur-md',
+                    'px-3 py-2 rounded-xl max-w-[85%] border',
                     item.sender === 'agent'
-                      ? 'bg-white/10 text-white self-start'
-                      : 'bg-white/30 text-black font-semibold self-end'
+                      ? 'bg-black/50  border-white/12 text-white/95 self-start'
+                      : 'bg-black/60 border-sky-400/40 text-white font-semibold self-end'
                   )}
                 >
                   {item.text}
@@ -343,14 +311,14 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.25 }}
-                className="w-full rounded-xl border border-white/10 bg-white/5 backdrop-blur-md shadow-lg"
+                className="w-full rounded-xl border border-white/12  "
               >
                 <button
                   type="button"
                   onClick={() =>
                     setExpandedSteps((prev) => ({ ...prev, task: !prev.task }))
                   }
-                  className="w-full flex items-center justify-between px-3 py-2 text-left"
+                  className="w-full flex items-center justify-between px-3 py-2 text-left rounded-t-xl bg-black/60"
                 >
                   <div className="flex items-center gap-2 text-white">
                     {statusIcon}
@@ -358,15 +326,15 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
                   </div>
                   <ChevronDown
                     className={cn(
-                      'h-4 w-4 text-white/70 transition-transform',
+                      'h-4 w-4 text-white/80 transition-transform',
                       expandedSteps.task ? 'rotate-180' : 'rotate-0'
                     )}
                   />
                 </button>
 
                 {expandedSteps.task && (
-                  <div className="border-t border-white/10 px-3 pb-3 pt-2 space-y-3 text-xs text-white/70">
-                    <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/40 px-3 py-2">
+                  <div className="border-t border-white/10 px-3 pb-3 pt-2 space-y-3 text-xs text-white/70 bg-black/40">
+                    <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/50 px-3 py-2">
                       <TerminalSquare className="h-4 w-4 text-sky-200" />
                       <div>
                         <div className="text-[11px] uppercase tracking-wide text-white/50">
@@ -376,7 +344,7 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
                       </div>
                     </div>
 
-                    <div className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 space-y-2">
+                    <div className="rounded-lg border border-white/10 bg-black/50 px-3 py-2 space-y-2">
                       <button
                         type="button"
                         onClick={() =>
@@ -405,7 +373,7 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
                       )}
                     </div>
 
-                    <div className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 space-y-2">
+                    <div className="rounded-lg border border-white/10 bg-black/50 px-3 py-2 space-y-2">
                       <button
                         type="button"
                         onClick={() =>
@@ -425,7 +393,7 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
                         />
                       </button>
                       {expandedSteps.tool && (
-                        <pre className="whitespace-pre-wrap rounded-md bg-black/60 p-2 text-[11px] text-emerald-100">
+                        <pre className="whitespace-pre-wrap rounded-md bg-black/50 border border-white/10 p-2 text-[11px] text-emerald-100/90">
                           {buildOutput(item, progress)}
                         </pre>
                       )}
@@ -438,7 +406,7 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
                         return (
                         <div
                           key={log.id}
-                          className="flex items-center gap-2 rounded-md border border-white/10 bg-black/40 px-2 py-1 text-[11px] text-white/70"
+                          className="flex items-center gap-2 rounded-md border border-white/10 bg-black/50 px-2 py-1 text-[11px] text-white/70"
                         >
                           <AnimatePresence mode="wait" initial={false}>
                             {isComplete ? (
@@ -486,10 +454,17 @@ export function DeepAgentExperienceCard({ className }: { className?: string }) {
           })}
         </div>
 
-        <div className="px-4 py-3 border-t border-white/10 relative z-10">
-          <div className="flex items-center justify-between text-xs text-white/60">
-            <span>Agent status</span>
-            <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-white/70">
+        <div className="px-4 py-3 border-t border-white/10 bg-black/60 relative z-10">
+          <div className="flex items-center justify-between text-xs text-white/90">
+            <span className="font-medium">Agent status</span>
+            <span
+              className={cn(
+                'rounded-full border px-2 py-1 font-medium',
+                timeline.some((item) => item.type === 'task' && item.status === 'complete')
+                  ? 'border-emerald-400/50 bg-emerald-500/20 text-emerald-200'
+                  : 'border-sky-400/50 bg-sky-500/20 text-sky-200'
+              )}
+            >
               {timeline.some((item) => item.type === 'task' && item.status === 'complete')
                 ? 'Completed'
                 : 'Running'}
@@ -509,41 +484,64 @@ export function DeepAgentExperienceShowcase({ className }: { className?: string 
         className
       )}
     >
-      <div className="lg:w-[45%] space-y-4 text-sm text-discord-text-secondary">
+      <div className="lg:w-1/3 flex min-h-0 flex-col gap-6 text-sm lg:min-h-[520px]">
+        {/* Header: title + icon, then description */}
         <div className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.2em] text-discord-text-muted">
-            Deep Agent Experience
+          <div className="flex items-center gap-2">
+            <Lightbulb className="h-6 w-6 text-emerald-400/90 shrink-0" />
+            <h3 className="text-2xl font-semibold text-discord-text-primary">
+              Deep Agent Experience
+            </h3>
+          </div>
+          <p className="text-sm text-discord-text-secondary leading-relaxed">
+            I led multi-agent workflow design with LangChain Deep Agents, focusing on traceable
+            tool usage, structured task visibility, and reviewer-ready outputs.
           </p>
-          <h3 className="text-2xl font-semibold text-discord-text-primary">
-            Google + LangChain Deep Agents
-          </h3>
         </div>
-        <p className="leading-relaxed">
-          I led multi-agent workflow design with LangChain Deep Agents, focusing on
-          traceable tool usage, structured task visibility, and reviewer-ready outputs.
-        </p>
-        <div className="space-y-2">
-          {[
-            'Designed collapsible reasoning steps with status telemetry.',
-            'Built tool usage logs with progress metrics and audit trails.',
-            'Optimized human-in-the-loop UX for technical stakeholders.',
-          ].map((detail) => (
-            <div
-              key={detail}
-              className="flex items-start gap-2 rounded-lg border border-discord-divider bg-discord-darker px-3 py-2 text-xs text-discord-text-secondary"
-            >
-              <span className="mt-1 h-1.5 w-1.5 rounded-full bg-discord-green" />
-              <span>{detail}</span>
-            </div>
-          ))}
-        </div>
-        <div className="inline-flex items-center gap-2 rounded-full border border-discord-blurple/40 bg-discord-blurple/15 px-3 py-1 text-xs text-discord-text-primary shadow-[0_0_20px_rgba(88,101,242,0.6)]">
-          <Sparkles className="h-3.5 w-3.5 text-discord-blurple" />
-          Deep Agents UI • Technical credibility
+
+        {/* CTA button */}
+        <Button
+          variant="outline"
+          className="w-fit rounded-full border-white/20 bg-white/5 text-discord-text-primary hover:bg-white/10 hover:text-white"
+        >
+          Explore Deep Agent Experience
+        </Button>
+
+        {/* Steps at bottom */}
+        <div className="mt-auto flex flex-col">
+          <span className="text-sm font-medium text-discord-text-primary">
+            Create the agent
+          </span>
+          <div className="mt-3 border-t border-discord-divider" />
+
+          <span className="mt-4 text-sm font-medium text-discord-text-primary">
+            Run tools &amp; traces
+          </span>
+          <div className="mt-3 border-t border-discord-divider" />
+
+          <div className="mt-4">
+            <span className="text-sm font-medium text-discord-text-primary">
+              Validate at scale
+            </span>
+            <p className="mt-1.5 text-xs text-discord-text-secondary leading-relaxed">
+              Review traces, verify tool usage, and confirm outcomes across thousands of runs.
+            </p>
+          </div>
         </div>
       </div>
-      <div className="flex-1 flex justify-center lg:justify-end">
-        <DeepAgentExperienceCard />
+      <div className="flex-1 relative flex justify-center min-h-[520px] rounded-xl overflow-hidden">
+        {/* Background image: gamer / neon cyber aesthetic */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-xl"
+          style={{
+            backgroundImage: `url(https://cdnb.artstation.com/p/assets/images/images/050/540/251/4k/mari-k-final-lowres-00000.jpg?1655115560)`,
+          }}
+          aria-hidden
+        />
+        <div className="absolute inset-0 rounded-xl  bg-linear-to-t from-transparent via-discord-dark/40 to-discord-dark/90" aria-hidden />
+        <div className="relative z-10 flex items-center justify-center py-6">
+          <DeepAgentExperienceCard />
+        </div>
       </div>
     </div>
   )

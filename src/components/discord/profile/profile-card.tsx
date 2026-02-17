@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
-import { motion, type MotionProps } from 'framer-motion'
+import { useRef, useState, useEffect } from 'react'
+import { motion, useMotionValue, useSpring } from 'framer-motion'
 import { MoreHorizontal, UserPlus, MessageCircle, MapPin, Github, Linkedin } from 'lucide-react'
 import { Badge } from '../../ui/badge'
 import { Button } from '../../ui/button'
@@ -35,6 +36,88 @@ interface ProfileCardProps {
   location: string
   roles: ProfileRole[]
   connections: ProfileConnection[]
+}
+
+const STICKY_PULL = 0.18
+const STICKY_MAX_OFFSET = 10
+const smoothSpring = { damping: 22, stiffness: 350 }
+
+function StickyRoleBadge({
+  role,
+  shiftHue,
+}: {
+  role: ProfileRole
+  shiftHue: (hex: string, degrees: number) => string
+}) {
+  const boundRef = useRef<HTMLDivElement>(null)
+  const [isHovered, setIsHovered] = useState(false)
+  const offsetX = useMotionValue(0)
+  const offsetY = useMotionValue(0)
+  const smoothX = useSpring(offsetX, smoothSpring)
+  const smoothY = useSpring(offsetY, smoothSpring)
+
+  useEffect(() => {
+    const el = boundRef.current
+    if (!el) return
+
+    const handleMove = (e: MouseEvent) => {
+      const { clientX, clientY } = e
+      const rect = el.getBoundingClientRect()
+      const centerX = rect.left + rect.width / 2
+      const centerY = rect.top + rect.height / 2
+      if (isHovered) {
+        const distanceX = clientX - centerX
+        const distanceY = clientY - centerY
+        const pullX = Math.max(-STICKY_MAX_OFFSET, Math.min(STICKY_MAX_OFFSET, distanceX * STICKY_PULL))
+        const pullY = Math.max(-STICKY_MAX_OFFSET, Math.min(STICKY_MAX_OFFSET, distanceY * STICKY_PULL))
+        offsetX.set(pullX)
+        offsetY.set(pullY)
+      }
+    }
+
+    const handleEnter = () => setIsHovered(true)
+    const handleLeave = () => {
+      setIsHovered(false)
+      offsetX.set(0)
+      offsetY.set(0)
+    }
+
+    el.addEventListener('mouseenter', handleEnter)
+    el.addEventListener('mouseleave', handleLeave)
+    window.addEventListener('mousemove', handleMove)
+    return () => {
+      el.removeEventListener('mouseenter', handleEnter)
+      el.removeEventListener('mouseleave', handleLeave)
+      window.removeEventListener('mousemove', handleMove)
+    }
+  }, [isHovered, offsetX, offsetY])
+
+  return (
+    <div ref={boundRef} className="inline-block">
+      <Badge
+        variant="outline"
+        asChild
+        className={cn(
+          'gap-2 rounded-full border px-2 py-1 text-xs font-medium cursor-pointer',
+          'transition-[box-shadow,background-image,color,border-color]'
+        )}
+        style={
+          {
+            color: role.color,
+            borderColor: `color-mix(in oklch, ${role.color} 85%, transparent)`,
+            backgroundImage: `linear-gradient(120deg, color-mix(in oklch, ${shiftHue(role.color, 30)} 35%, transparent), color-mix(in oklch, ${shiftHue(role.color, -30)} 15%, transparent))`,
+          } as CSSProperties
+        }
+      >
+        <motion.span
+          className="inline-flex items-center gap-2"
+          style={{ x: smoothX, y: smoothY }}
+        >
+          {role.label}
+        </motion.span>
+      </Badge>
+    </div>
+  )
 }
 
 export function ProfileCard({
@@ -123,74 +206,6 @@ export function ProfileCard({
     return `#${rFinal.toString(16).padStart(2, '0')}${gFinal.toString(16).padStart(2, '0')}${bFinal.toString(16).padStart(2, '0')}`
   }
 
-  const getRoleHoverMotion = (role: ProfileRole): MotionProps => {
-    const glowColor = `${role.color}55`
-    const easeInOut = [0.4, 0, 0.2, 1] as const
-
-    switch (role.animation) {
-      case 'pop':
-        return {
-          whileHover: {
-            scale: [1, 1.08, 1],
-            rotate: [0, -2, 2, 0],
-            filter: ['saturate(1)', 'saturate(1.35)', 'saturate(1)'],
-          },
-          transition: { duration: 1, ease: easeInOut, repeat: Infinity },
-        }
-      case 'bounce':
-        return {
-          whileHover: {
-            y: [0, -4, 0],
-            scale: [1, 1.03, 1],
-            filter: ['hue-rotate(0deg)', 'hue-rotate(12deg)', 'hue-rotate(0deg)'],
-          },
-          transition: { duration: 0.9, ease: easeInOut, repeat: Infinity },
-        }
-      case 'float':
-        return {
-          whileHover: {
-            y: [0, 4, 0],
-            rotate: [0, 1.5, -1.5, 0],
-            filter: ['brightness(1)', 'brightness(1.2)', 'brightness(1)'],
-          },
-          transition: { duration: 1.4, ease: easeInOut, repeat: Infinity },
-        }
-      case 'jitter':
-        return {
-          whileHover: {
-            x: [0, 2, -2, 1, 0],
-            y: [0, -1, 1, 0],
-            rotate: [0, 2, -2, 0],
-            filter: ['contrast(1)', 'contrast(1.2)', 'contrast(1)'],
-          },
-          transition: { duration: 0.7, ease: easeInOut, repeat: Infinity },
-        }
-      case 'spin':
-        return {
-          whileHover: {
-            scale: [1, 1.1, 0.95, 1.1, 1],
-            rotate: [0, 5, -5, 3, 0],
-            filter: ['brightness(1)', 'brightness(1.3)', 'brightness(1)', 'brightness(1.2)', 'brightness(1)'],
-          },
-          transition: { duration: 1.2, ease: easeInOut, repeat: Infinity },
-        }
-      case 'glow':
-        return {
-          whileHover: {
-            boxShadow: [
-              `0 0 0 0 ${glowColor}`,
-              `0 0 12px 3px ${glowColor}`,
-              `0 0 0 0 ${glowColor}`,
-            ],
-            filter: ['saturate(1)', 'saturate(1.5)', 'saturate(1)'],
-          },
-          transition: { duration: 1.3, ease: easeInOut, repeat: Infinity },
-        }
-      default:
-        return {}
-    }
-  }
-
   return (
     <section className="bg-discord-dark rounded-xl border border-discord-divider overflow-hidden shadow-xl">
       <ProfileHeader
@@ -260,32 +275,7 @@ export function ProfileCard({
           </div>
           <div className="flex flex-wrap gap-2">
             {roles.map((role) => (
-              <Badge
-                key={role.id}
-                variant="outline"
-                asChild
-                className={cn(
-                  'gap-2 rounded-full border px-2 py-1 text-xs font-medium cursor-pointer',
-                  'transition-[transform,box-shadow,background-image,color,border-color]'
-                )}
-                style={
-                  {
-                    color: role.color,
-                    borderColor: `color-mix(in oklch, ${role.color} 85%, transparent)`,
-                    backgroundImage: `linear-gradient(120deg, color-mix(in oklch, ${shiftHue(role.color, 30)} 35%, transparent), color-mix(in oklch, ${shiftHue(role.color, -30)} 15%, transparent))`,
-                  } as CSSProperties
-                }
-              >
-                <motion.span {...getRoleHoverMotion(role)} className="inline-flex items-center gap-2">
-                  <span
-                    className="size-2.5 rounded-full"
-                    style={{
-                      backgroundImage: `linear-gradient(135deg, ${role.color}, ${shiftHue(role.color, 60)})`,
-                    }}
-                  />
-                  {role.label}
-                </motion.span>
-              </Badge>
+              <StickyRoleBadge key={role.id} role={role} shiftHue={shiftHue} />
             ))}
           </div>
         </div>
