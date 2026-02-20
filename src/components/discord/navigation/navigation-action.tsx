@@ -28,7 +28,7 @@ export function NavigationAction() {
             </div>
           </button>
         </TooltipTrigger>
-        <TooltipContent side="right" className="bg-discord-darker border-none">
+        <TooltipContent side="right">
           <p className="font-semibold">Add a Server</p>
         </TooltipContent>
       </Tooltip>

@@ -58,7 +58,7 @@ export function HomeButton() {
             </Link>
           </div>
         </TooltipTrigger>
-        <TooltipContent side="right" className="bg-discord-darker border-none">
+        <TooltipContent side="right">
           <p className="font-semibold">Direct Messages</p>
         </TooltipContent>
       </Tooltip>

@@ -83,7 +83,7 @@ export function ProfileHeader({
               </TooltipTrigger>
               <TooltipContent
                 side="top"
-                className="bg-discord-darker border-none px-3 py-2 flex items-center gap-2"
+                className="px-3 py-2 flex items-center gap-2"
               >
                 <motion.div
                   animate={{ rotate: [0, 14, -8, 14, -4, 10, 0] }}

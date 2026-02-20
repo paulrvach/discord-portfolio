@@ -43,7 +43,7 @@ export function ChatHeader({ channel }: ChatHeaderProps) {
                 <Bell className="w-5 h-5" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-discord-darker border-none">
+            <TooltipContent side="bottom">
               <p>Notification Settings</p>
             </TooltipContent>
           </Tooltip>
@@ -54,7 +54,7 @@ export function ChatHeader({ channel }: ChatHeaderProps) {
                 <Pin className="w-5 h-5" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-discord-darker border-none">
+            <TooltipContent side="bottom">
               <p>Pinned Messages</p>
             </TooltipContent>
           </Tooltip>
@@ -71,7 +71,7 @@ export function ChatHeader({ channel }: ChatHeaderProps) {
                 <Users className="w-5 h-5" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-discord-darker border-none">
+            <TooltipContent side="bottom">
               <p>{memberListVisible ? 'Hide' : 'Show'} Member List</p>
             </TooltipContent>
           </Tooltip>
@@ -90,7 +90,7 @@ export function ChatHeader({ channel }: ChatHeaderProps) {
                 <Inbox className="w-5 h-5" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-discord-darker border-none">
+            <TooltipContent side="bottom">
               <p>Inbox</p>
             </TooltipContent>
           </Tooltip>
@@ -101,7 +101,7 @@ export function ChatHeader({ channel }: ChatHeaderProps) {
                 <HelpCircle className="w-5 h-5" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-discord-darker border-none">
+            <TooltipContent side="bottom">
               <p>Help</p>
             </TooltipContent>
           </Tooltip>

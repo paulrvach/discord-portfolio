@@ -96,7 +96,7 @@ export function UserPanel() {
                 <Mic className="w-5 h-5" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="top" className="bg-discord-darker border-none">
+            <TooltipContent side="top">
               <p>Mute</p>
             </TooltipContent>
           </Tooltip>
@@ -107,7 +107,7 @@ export function UserPanel() {
                 <Headphones className="w-5 h-5" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="top" className="bg-discord-darker border-none">
+            <TooltipContent side="top">
               <p>Deafen</p>
             </TooltipContent>
           </Tooltip>
@@ -118,7 +118,7 @@ export function UserPanel() {
                 <Settings className="w-5 h-5" />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="top" className="bg-discord-darker border-none">
+            <TooltipContent side="top">
               <p>User Settings</p>
             </TooltipContent>
           </Tooltip>

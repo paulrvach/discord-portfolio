@@ -64,7 +64,7 @@ export function NavigationItem({ id, name, imageUrl }: NavigationItemProps) {
             </Link>
           </div>
         </TooltipTrigger>
-        <TooltipContent side="right" className="bg-discord-darker border-none">
+        <TooltipContent side="right">
           <p className="font-semibold">{name}</p>
         </TooltipContent>
       </Tooltip>

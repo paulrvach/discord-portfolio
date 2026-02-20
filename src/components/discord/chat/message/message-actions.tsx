@@ -29,7 +29,7 @@ export function MessageActions({ copyText }: MessageActionsProps) {
               <Smile className="w-5 h-5" />
             </button>
           </TooltipTrigger>
-          <TooltipContent side="top" className="bg-discord-darker border-none">
+          <TooltipContent side="top">
             <p>Add Reaction</p>
           </TooltipContent>
         </Tooltip>
@@ -44,7 +44,7 @@ export function MessageActions({ copyText }: MessageActionsProps) {
               <Copy className="w-5 h-5" />
             </button>
           </TooltipTrigger>
-          <TooltipContent side="top" className="bg-discord-darker border-none">
+          <TooltipContent side="top">
             <p>Copy Message</p>
           </TooltipContent>
         </Tooltip>
@@ -55,7 +55,7 @@ export function MessageActions({ copyText }: MessageActionsProps) {
               <Reply className="w-5 h-5" />
             </button>
           </TooltipTrigger>
-          <TooltipContent side="top" className="bg-discord-darker border-none">
+          <TooltipContent side="top">
             <p>Reply</p>
           </TooltipContent>
         </Tooltip>
@@ -66,7 +66,7 @@ export function MessageActions({ copyText }: MessageActionsProps) {
               <Pencil className="w-5 h-5" />
             </button>
           </TooltipTrigger>
-          <TooltipContent side="top" className="bg-discord-darker border-none">
+          <TooltipContent side="top">
             <p>Edit</p>
           </TooltipContent>
         </Tooltip>
@@ -77,7 +77,7 @@ export function MessageActions({ copyText }: MessageActionsProps) {
               <Trash className="w-5 h-5" />
             </button>
           </TooltipTrigger>
-          <TooltipContent side="top" className="bg-discord-darker border-none">
+          <TooltipContent side="top">
             <p>Delete</p>
           </TooltipContent>
         </Tooltip>
@@ -88,7 +88,7 @@ export function MessageActions({ copyText }: MessageActionsProps) {
               <MoreHorizontal className="w-5 h-5" />
             </button>
           </TooltipTrigger>
-          <TooltipContent side="top" className="bg-discord-darker border-none">
+          <TooltipContent side="top">
             <p>More</p>
           </TooltipContent>
         </Tooltip>

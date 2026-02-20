@@ -38,7 +38,7 @@ export function ProfileBadges({ badges }: ProfileBadgesProps) {
             </TooltipTrigger>
             <TooltipContent
               side="top"
-              className="bg-discord-darker border-none p-3 min-w-[140px]"
+              className="p-3 min-w-[140px]"
             >
               <div className="flex flex-col gap-1">
                 <span className="text-xs text-discord-text-muted uppercase tracking-wider">
