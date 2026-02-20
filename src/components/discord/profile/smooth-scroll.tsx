@@ -6,17 +6,18 @@ interface SmoothScrollProps {
   className?: string
 }
 
+const SNAP_DEBOUNCE_MS = 150
+
 export function SmoothScroll({ children, className }: SmoothScrollProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+  const snapTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const [contentHeight, setContentHeight] = useState(0)
   const [containerHeight, setContainerHeight] = useState(0)
 
-  // Current "real" scroll target (updated instantly on wheel)
   const scrollTarget = useRef(0)
 
-  // Motion value that the spring will chase
   const scrollY = useMotionValue(0)
   const smoothY = useSpring(scrollY, {
     damping: 20,
@@ -24,7 +25,6 @@ export function SmoothScroll({ children, className }: SmoothScrollProps) {
     mass: 0.5,
   })
 
-  // Measure content vs container heights so we know the max scroll
   useEffect(() => {
     const content = contentRef.current
     const container = containerRef.current
@@ -44,11 +44,37 @@ export function SmoothScroll({ children, className }: SmoothScrollProps) {
     return () => observer.disconnect()
   }, [])
 
-  // Wheel handler — updates the target and lets the spring chase it
+  const snapToNearestHeader = useCallback(() => {
+    const content = contentRef.current
+    if (!content) return
+
+    const headers = content.querySelectorAll("header")
+    if (headers.length === 0) return
+
+    const maxScroll = Math.max(0, contentHeight - containerHeight)
+    const current = scrollTarget.current
+    let nearestOffset = current
+    let nearestDist = Infinity
+
+    headers.forEach((header) => {
+      const offset = Math.min(header.offsetTop, maxScroll)
+      const dist = Math.abs(current - offset)
+      if (dist < nearestDist) {
+        nearestDist = dist
+        nearestOffset = offset
+      }
+    })
+
+    if (nearestDist > 0 && nearestDist < containerHeight * 0.4) {
+      scrollTarget.current = nearestOffset
+      scrollY.set(-nearestOffset)
+    }
+  }, [contentHeight, containerHeight, scrollY])
+
   const handleWheel = useCallback(
     (e: WheelEvent) => {
       const maxScroll = Math.max(0, contentHeight - containerHeight)
-      if (maxScroll <= 0) return // nothing to scroll
+      if (maxScroll <= 0) return
 
       e.preventDefault()
 
@@ -58,8 +84,11 @@ export function SmoothScroll({ children, className }: SmoothScrollProps) {
       )
 
       scrollY.set(-scrollTarget.current)
+
+      if (snapTimer.current) clearTimeout(snapTimer.current)
+      snapTimer.current = setTimeout(snapToNearestHeader, SNAP_DEBOUNCE_MS)
     },
-    [contentHeight, containerHeight, scrollY],
+    [contentHeight, containerHeight, scrollY, snapToNearestHeader],
   )
 
   useEffect(() => {
@@ -69,6 +98,12 @@ export function SmoothScroll({ children, className }: SmoothScrollProps) {
     container.addEventListener("wheel", handleWheel, { passive: false })
     return () => container.removeEventListener("wheel", handleWheel)
   }, [handleWheel])
+
+  useEffect(() => {
+    return () => {
+      if (snapTimer.current) clearTimeout(snapTimer.current)
+    }
+  }, [])
 
   return (
     <div

@@ -1,6 +1,7 @@
 import { DeepAgentExperienceShowcase } from './deep-agent-experience'
 import { KafkaDeploymentExperienceShowcase } from './kafka-deployment-experience'
 import { StageDiveExperienceShowcase } from './stage-dive-experience'
+import { TradesTechExperienceShowcase } from './trade-tech-experience'
 import { SmoothScroll } from './smooth-scroll'
 
 export function ProfileTabsPanel() {
@@ -21,6 +22,18 @@ export function ProfileTabsPanel() {
               </p>
             </header>
             <DeepAgentExperienceShowcase />
+          </section>
+
+          <section className="space-y-4">
+            <header className=" pb-3">
+              <h2 className="text-xl font-semibold text-discord-text-primary">
+                Los Angeles Trade-Technical College
+              </h2>
+              <p className="text-sm text-discord-text-secondary">
+                Software Engineering Volunteer • June 2025 - August 2025
+              </p>
+            </header>
+            <TradesTechExperienceShowcase />
           </section>
 
           <section className="space-y-4">
