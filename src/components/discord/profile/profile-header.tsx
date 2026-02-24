@@ -66,8 +66,7 @@ export function ProfileHeader({
                   <Avatar className="size-20 md:size-24 border-[6px] border-discord-dark ring-0">
                     <AvatarImage
                       src={
-                        avatarUrl ??
-                        'https://helpful-kingfisher-649.convex.cloud/api/storage/64ca8229-56a5-49da-9e05-41c63570f4b1'
+                        avatarUrl
                       }
                       alt={name}
                       className="object-cover"

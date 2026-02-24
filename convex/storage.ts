@@ -10,14 +10,18 @@ export const generateUploadUrl = mutation({
   },
 })
 
-// Get a file URL by storage ID
+// Get a file URL by storage ID. Returns null if the file doesn't exist (e.g. ID from another deployment).
 export const getUrl = query({
   args: {
     storageId: v.string(),
   },
   handler: async (ctx, args) => {
-    const url = await ctx.storage.getUrl(args.storageId as Id<'_storage'>)
-    return url
+    try {
+      const url = await ctx.storage.getUrl(args.storageId as Id<'_storage'>)
+      return url
+    } catch {
+      return null
+    }
   },
 })
 
