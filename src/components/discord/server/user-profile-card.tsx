@@ -1,9 +1,21 @@
+import type { CSSProperties, ComponentType } from "react"
 import { motion } from "framer-motion"
-import { ArrowUpRight, MapPin, Sparkles } from "lucide-react"
+import { Github, Linkedin, MapPin, MessageCircle, MoreHorizontal, UserPlus } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar"
 
 type UserProfileLink = {
   label: string
+  url: string
+}
+
+type UserProfileRole = {
+  label: string
+  color: string
+}
+
+type UserProfileConnection = {
+  platform: string
+  username: string
   url: string
 }
 
@@ -17,6 +29,9 @@ type UserProfileData = {
   memberSince: string
   links: UserProfileLink[]
   bannerUrl?: string | null
+  roles?: UserProfileRole[]
+  connections?: UserProfileConnection[]
+  statusText?: string
 }
 
 interface UserProfileCardProps {
@@ -32,12 +47,19 @@ const STATUS_TONE: Record<UserProfileData["status"], string> = {
   offline: "bg-discord-text-muted",
 }
 
+const PLATFORM_ICONS: Record<string, ComponentType<{ className?: string }>> = {
+  linkedin: Linkedin,
+  github: Github,
+}
+
 export function UserProfileCard({ user, avatarUrl, onEditProfile }: UserProfileCardProps) {
   const initials = user.name
     .split(" ")
     .map((part) => part[0])
     .join("")
     .toUpperCase()
+
+  const statusDisplay = user.statusText ?? user.bio
 
   return (
     <div className="relative overflow-hidden rounded-[24px] p-px shadow-[0_20px_60px_rgba(0,0,0,0.55)]">
@@ -49,87 +71,129 @@ export function UserProfileCard({ user, avatarUrl, onEditProfile }: UserProfileC
         transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
       />
 
-      <div className="relative overflow-hidden rounded-[23px] border border-white/10 bg-[rgba(18,19,26,0.72)] backdrop-blur-xl">
-        <div className="relative h-24 overflow-hidden">
+      <div className="relative overflow-hidden rounded-[23px] bg-discord-dark">
+        <div className="relative h-28 overflow-hidden">
           {user.bannerUrl ? (
             <img src={user.bannerUrl} alt={`${user.name} banner`} className="h-full w-full object-cover" />
           ) : (
-            <div className="h-full w-full bg-[radial-gradient(110%_120%_at_0%_0%,rgba(88,101,242,0.78)_0%,rgba(88,101,242,0)_55%),radial-gradient(95%_90%_at_100%_0%,rgba(6,182,212,0.5)_0%,rgba(6,182,212,0)_60%),radial-gradient(120%_150%_at_50%_100%,rgba(168,85,247,0.32)_0%,rgba(168,85,247,0)_75%),linear-gradient(180deg,rgba(15,18,28,0.85)_0%,rgba(18,20,30,1)_100%)]" />
+            <div className="h-full w-full bg-[radial-gradient(ellipse_at_top,rgba(88,101,242,0.3),rgba(0,0,0,0.95))] bg-center" />
           )}
-          <svg
-            aria-hidden
-            viewBox="0 0 320 96"
-            className="pointer-events-none absolute inset-0 h-full w-full opacity-30"
-            preserveAspectRatio="none"
-          >
-            <path d="M0 38C48 62 88 8 148 30C208 52 252 34 320 60V96H0Z" fill="rgba(255,255,255,0.18)" />
-            <circle cx="58" cy="28" r="20" fill="rgba(255,255,255,0.11)" />
-            <circle cx="252" cy="24" r="16" fill="rgba(255,255,255,0.09)" />
-          </svg>
         </div>
 
         <div className="relative px-4 pb-4">
-          <div className="-mt-10 flex items-end justify-between gap-3">
-            <div className="relative">
-              <Avatar className="size-20 border-[5px] border-[rgba(18,19,26,0.88)] ring-2 ring-white/10">
+          <div className="-mt-10 mb-6">
+            <div className="relative w-fit">
+              <Avatar className="size-20 md:size-24 border-[6px] border-discord-dark">
                 <AvatarImage src={avatarUrl ?? undefined} className="object-cover" />
-                <AvatarFallback className="bg-discord-blurple text-lg font-semibold text-white">
+                <AvatarFallback className="bg-discord-blurple text-2xl font-bold text-white">
                   {initials}
                 </AvatarFallback>
               </Avatar>
-              <span className="absolute bottom-1 right-1 flex size-5 items-center justify-center rounded-full bg-[rgba(18,19,26,0.96)]">
-                <span className={`size-3 rounded-full ${STATUS_TONE[user.status]}`} />
-              </span>
+              <div className="absolute bottom-1 right-1 flex size-5 md:size-6 items-center justify-center rounded-full bg-discord-dark">
+                <span className={`size-3 md:size-4 rounded-full ${STATUS_TONE[user.status]}`} />
+              </div>
             </div>
+          </div>
+
+          <div className="mb-3">
+            <h2
+              className="text-xl md:text-3xl font-bold pixel-text tracking-widest relative inline-block"
+              style={{
+                color: "#00ff88",
+                textShadow: "0 0 4px rgba(0, 255, 136, 0.4), 0 0 8px rgba(0, 255, 136, 0.25)",
+                paddingBottom: "0.1em",
+              }}
+            >
+              {user.name}
+            </h2>
+            <p className="text-sm text-discord-text-muted">@{user.username}</p>
+          </div>
+
+          <div className="mb-4 flex items-center gap-2">
+            <button className="flex items-center gap-1.5 rounded-md bg-discord-blurple px-3 py-1.5 text-xs font-medium text-white transition hover:bg-discord-blurple/80">
+              <UserPlus className="size-4" />
+              Add Friend
+            </button>
+            <button className="flex items-center gap-1.5 rounded-md bg-discord-hover px-3 py-1.5 text-xs font-medium text-discord-text-primary transition hover:bg-discord-hover/80">
+              <MessageCircle className="size-4" />
+              Message
+            </button>
             <button
               onClick={onEditProfile}
-              className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-discord-text-primary transition hover:bg-white/20"
+              className="flex items-center justify-center rounded-md bg-discord-hover size-8 text-discord-text-primary transition hover:bg-discord-hover/80"
             >
-              Edit Profile
+              <MoreHorizontal className="size-4" />
             </button>
           </div>
 
-          <div className="mt-3 space-y-3 rounded-2xl border border-white/12 bg-black/25 p-3 backdrop-blur-md">
-            <div>
-              <div className="flex items-center gap-1 text-discord-text-primary">
-                <span className="text-lg font-semibold tracking-tight">{user.name}</span>
-                <Sparkles className="size-3.5 text-[#b4bdff]" />
-              </div>
-              <p className="text-xs text-discord-text-secondary">@{user.username}</p>
-              <p className="mt-1 text-xs text-discord-text-primary/90">{user.customStatus}</p>
-            </div>
-
-            <div className="h-px bg-white/10" />
-
-            <div className="flex items-center gap-2 text-sm text-discord-text-primary">
-              <MapPin className="size-4 text-discord-text-secondary" />
-              <span>{user.location}</span>
-            </div>
-
-            <p className="text-sm leading-relaxed text-discord-text-primary/90">{user.bio}</p>
-
-            <div className="space-y-1.5 rounded-xl bg-black/20 p-2.5">
-              {user.links.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm text-discord-text-primary/90 transition hover:bg-white/10"
-                >
-                  <span className="capitalize">{link.label}</span>
-                  <ArrowUpRight className="size-3.5 text-discord-text-secondary" />
-                </a>
-              ))}
-            </div>
-
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-discord-text-muted">
-                Member Since
-              </p>
-              <p className="mt-1 text-sm text-discord-text-primary">{user.memberSince}</p>
-            </div>
+          <div className="mb-3 flex items-center gap-2 text-sm text-discord-text-secondary">
+            <MapPin className="size-4" />
+            <span>{user.location}</span>
           </div>
+
+          <div className="mb-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-discord-text-muted mb-1">
+              Status
+            </p>
+            <p className="text-sm text-discord-text-primary">{statusDisplay}</p>
+          </div>
+
+          <div className="h-px bg-discord-divider mb-3" />
+
+          {user.roles && user.roles.length > 0 && (
+            <>
+              <div className="mb-3">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-discord-text-muted mb-2">
+                  Roles
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {user.roles.map((role) => (
+                    <span
+                      key={role.label}
+                      className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
+                      style={{
+                        color: role.color,
+                        borderColor: `color-mix(in oklch, ${role.color} 70%, transparent)`,
+                        backgroundImage: `linear-gradient(120deg, color-mix(in oklch, ${role.color} 20%, transparent), color-mix(in oklch, ${role.color} 8%, transparent))`,
+                      } as CSSProperties}
+                    >
+                      {role.label}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {user.connections && user.connections.length > 0 && (
+                <div className="h-px bg-discord-divider mb-3" />
+              )}
+            </>
+          )}
+
+          {user.connections && user.connections.length > 0 && (
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-discord-text-muted mb-2">
+                Connections
+              </p>
+              <div className="space-y-2">
+                {user.connections.map((conn) => {
+                  const Icon = PLATFORM_ICONS[conn.platform.toLowerCase()]
+                  return (
+                    <a
+                      key={conn.platform}
+                      href={conn.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 text-sm text-discord-text-primary transition hover:underline"
+                    >
+                      {Icon && <Icon className="size-5 text-white" />}
+                      <span className="font-semibold">{conn.platform}</span>
+                      <span className="text-discord-text-secondary">{conn.username}</span>
+                    </a>
+                  )
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -37,3 +37,7 @@ export type MarkdownPayload = {
   storageId: string
   url?: string
 }
+
+export type CustomPayload = {
+  componentKey: string
+}

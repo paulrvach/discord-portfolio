@@ -72,7 +72,8 @@ export default defineSchema({
         v.literal('bot'),
         v.literal('media'),
         v.literal('audio'),
-        v.literal('markdown')
+        v.literal('markdown'),
+        v.literal('custom')
       )
     ),
     embed: v.optional(

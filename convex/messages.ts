@@ -291,6 +291,33 @@ export const createMediaDirect = mutation({
   },
 })
 
+// Create a custom message (for rendering rich React content client-side)
+export const createCustomMessage = mutation({
+  args: {
+    channelId: v.id('channels'),
+    content: v.string(),
+    userId: v.optional(v.id('users')),
+  },
+  handler: async (ctx, args) => {
+    let userId = args.userId
+    if (!userId) {
+      const users = await ctx.db.query('users').take(1)
+      if (!users[0]) throw new Error('No users found - please seed the database')
+      userId = users[0]._id
+    }
+
+    const channel = await ctx.db.get(args.channelId)
+    if (!channel) throw new Error('Channel not found')
+
+    return await ctx.db.insert('messages', {
+      channelId: args.channelId,
+      userId,
+      content: args.content,
+      type: 'custom',
+    })
+  },
+})
+
 // Append images to an existing media message
 export const appendMediaImages = mutation({
   args: {

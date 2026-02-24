@@ -27,13 +27,25 @@ export function UserPanel() {
     username: 'paulrvach',
     status: 'online' as const,
     customStatus: 'Buildin cool stuff',
-    location: 'Irvine, CA',
-    bio: 'Another Day in Pizza Paradise 🍕 ...',
+    location: 'Orange County, CA',
+    bio: 'Another Day in Pizza Paradise 🍕',
     memberSince: 'Dec 3, 2016',
     links: [
       { label: 'github', url: 'https://github.com/paulrvach' },
       { label: 'website', url: 'https://paulvachon.dev/' },
       { label: 'twitter', url: 'https://twitter.com/paulvdev' },
+    ],
+    roles: [
+      { label: 'Software Engineer', color: '#10B981' },
+      { label: 'Builder', color: '#8B5CF6' },
+      { label: 'Audiophile', color: '#EC4899' },
+      { label: 'Gamer', color: '#F97316' },
+      { label: 'Artist', color: '#EF4444' },
+      { label: 'CS Student', color: '#06B6D4' },
+    ],
+    connections: [
+      { platform: 'LinkedIn', username: 'paul-vachon', url: 'https://linkedin.com/in/paul-vachon' },
+      { platform: 'GitHub', username: 'paulrvach', url: 'https://github.com/paulrvach' },
     ],
   }
 

@@ -6,7 +6,7 @@ interface SmoothScrollProps {
   className?: string
 }
 
-const SNAP_DEBOUNCE_MS = 150
+const SNAP_DEBOUNCE_MS = 300
 
 export function SmoothScroll({ children, className }: SmoothScrollProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -65,7 +65,7 @@ export function SmoothScroll({ children, className }: SmoothScrollProps) {
       }
     })
 
-    if (nearestDist > 0 && nearestDist < containerHeight * 0.4) {
+    if (nearestDist > 0 && nearestDist < containerHeight * 0.15) {
       scrollTarget.current = nearestOffset
       scrollY.set(-nearestOffset)
     }

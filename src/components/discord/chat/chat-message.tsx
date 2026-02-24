@@ -9,6 +9,7 @@ import { GitHubEmbed } from './message/github-embed'
 import { MediaMessage } from './message/media-message'
 import { AudioMessage } from '@/components/discord/chat/message/audio-message'
 import { MarkdownMessage } from './message/markdown-message'
+import { CustomMessage } from './message/custom-message'
 import type {
   GitHubEmbed as GitHubEmbedType,
   MediaPayload,
@@ -18,7 +19,7 @@ import type {
 
 interface ChatMessageProps {
   message: Omit<Doc<'messages'>, 'type'> & {
-    type?: 'user' | 'bot' | 'media' | 'audio' | 'markdown'
+    type?: 'user' | 'bot' | 'media' | 'audio' | 'markdown' | 'custom'
     embed?: GitHubEmbedType
     media?: MediaPayload
     audio?: AudioPayload
@@ -30,14 +31,16 @@ interface ChatMessageProps {
     }
   }
   isCompact: boolean
+  children?: React.ReactNode
 }
 
-export function ChatMessage({ message, isCompact }: ChatMessageProps) {
+export function ChatMessage({ message, isCompact, children }: ChatMessageProps) {
   const [isHovered, setIsHovered] = useState(false)
   const isBotMessage = message.type === 'bot' || message.embed?.type === 'github'
   const isMediaMessage = message.type === 'media' && Boolean(message.media)
   const isAudioMessage = message.type === 'audio' && Boolean(message.audio)
   const isMarkdownMessage = message.type === 'markdown' && Boolean(message.markdown)
+  const isCustomMessage = message.type === 'custom'
   const embedTimestamp = message.embed?.timestamp ?? message._creationTime
   const embedTimeLabel = useMemo(
     () => formatTime(embedTimestamp),
@@ -56,6 +59,7 @@ export function ChatMessage({ message, isCompact }: ChatMessageProps) {
     !isMediaMessage &&
     !isAudioMessage &&
     !isMarkdownMessage &&
+    !isCustomMessage &&
     !message.embed
 
   if (showCompactLayout) {
@@ -114,7 +118,7 @@ export function ChatMessage({ message, isCompact }: ChatMessageProps) {
             timeLabel={formatTime(message._creationTime)}
           />
 
-          {!message.embed && !isMediaMessage && !isAudioMessage && !isMarkdownMessage && (
+          {!message.embed && !isMediaMessage && !isAudioMessage && !isMarkdownMessage && !isCustomMessage && (
             <MessageContent content={message.content} editedAt={message.editedAt} />
           )}
 
@@ -127,6 +131,7 @@ export function ChatMessage({ message, isCompact }: ChatMessageProps) {
           {isMarkdownMessage && message.markdown && (
             <MarkdownMessage markdown={message.markdown} />
           )}
+          {isCustomMessage && <CustomMessage>{children}</CustomMessage>}
         </div>
       </div>
 
